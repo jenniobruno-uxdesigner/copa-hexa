@@ -1,1 +1,107 @@
-/* Estilos preenchidos na Task 7 */
+:root {
+  --verde: #009c3b;
+  --amarelo: #ffdf00;
+  --azul: #002776;
+  --branco: #ffffff;
+  --texto: #14213d;
+  --alerta: #f4a300;
+  --perigo: #c1121f;
+  --sombra: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --raio: 16px;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--texto);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 223, 0, 0.25), transparent 40%),
+    radial-gradient(circle at 80% 0%, rgba(0, 156, 59, 0.25), transparent 40%),
+    var(--branco);
+  line-height: 1.5;
+}
+
+main { max-width: 720px; margin: 0 auto; padding: 0 1rem 4rem; }
+
+section { margin: 2.5rem 0; }
+
+h2 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+
+/* Topo */
+.topo {
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+  background: linear-gradient(135deg, var(--verde), var(--azul));
+  color: var(--branco);
+}
+.topo__titulo { font-size: 2rem; margin: 0 0 1.5rem; }
+
+/* Termômetro */
+.termometro {
+  max-width: 520px;
+  margin: 0 auto;
+  background: var(--branco);
+  color: var(--texto);
+  border-radius: var(--raio);
+  padding: 1.5rem;
+  box-shadow: var(--sombra);
+  border-top: 8px solid var(--verde);
+}
+.termometro__emoji { font-size: 3rem; line-height: 1; }
+.termometro__titulo { margin: 0.5rem 0; }
+.termometro__detalhe { margin: 0; }
+.termometro.nivel-alerta { border-top-color: var(--alerta); }
+.termometro.nivel-eliminado { border-top-color: var(--perigo); }
+.termometro.nivel-no-caminho { border-top-color: var(--amarelo); }
+.termometro.nivel-muito-bem,
+.termometro.nivel-hexa { border-top-color: var(--verde); }
+
+/* Intro */
+.intro {
+  background: var(--amarelo);
+  border-radius: var(--raio);
+  padding: 1.5rem;
+}
+
+/* Próximo jogo */
+.proximo__adversario { font-size: 1.5rem; font-weight: 700; }
+.proximo__adversario span { color: var(--verde); margin: 0 0.4rem; }
+.proximo__quando { font-weight: 600; }
+.proximo__fase { opacity: 0.7; }
+
+/* Tabela do grupo */
+.grupo__tabela { width: 100%; border-collapse: collapse; }
+.grupo__tabela th,
+.grupo__tabela td { padding: 0.6rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+.grupo__tabela tr.destaque { background: rgba(255, 223, 0, 0.35); font-weight: 700; }
+.grupo__legenda { opacity: 0.75; }
+
+/* Craques */
+.craques { list-style: none; padding: 0; display: grid; gap: 0.5rem; }
+.craques li {
+  display: flex; align-items: center; gap: 0.75rem;
+  background: var(--branco); border-radius: 12px; padding: 0.75rem 1rem;
+  box-shadow: var(--sombra);
+}
+.craque__nome { font-weight: 700; }
+.craque__time { opacity: 0.7; }
+.craque__gols { margin-left: auto; font-weight: 700; color: var(--verde); }
+
+/* Glossário */
+.glossario { display: grid; gap: 1rem; }
+.glossario__card {
+  background: var(--branco); border-radius: var(--raio);
+  padding: 1.25rem; box-shadow: var(--sombra); border-left: 6px solid var(--azul);
+}
+.glossario__card h3 { margin: 0 0 0.5rem; color: var(--azul); }
+.glossario__legenda { opacity: 0.75; }
+
+@media (min-width: 560px) {
+  .glossario { grid-template-columns: 1fr 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
