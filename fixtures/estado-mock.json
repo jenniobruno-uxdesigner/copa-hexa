@@ -1,0 +1,26 @@
+{
+  "atualizadoEm": "2026-06-25T12:00:00Z",
+  "fonte": "manual",
+  "proximoJogo": {
+    "id": "BRA-SRB-2026-06-28",
+    "adversario": "Sérvia",
+    "data": "2026-06-28T19:00:00Z",
+    "fase": "Fase de grupos - 2ª rodada",
+    "encerrado": false,
+    "placarBrasil": null,
+    "placarAdversario": null
+  },
+  "grupo": {
+    "nome": "Grupo G",
+    "times": [
+      { "nome": "Brasil", "posicao": 1, "pontos": 3, "jogos": 1, "saldo": 2 },
+      { "nome": "Suíça", "posicao": 2, "pontos": 3, "jogos": 1, "saldo": 1 },
+      { "nome": "Sérvia", "posicao": 3, "pontos": 0, "jogos": 1, "saldo": -1 },
+      { "nome": "Camarões", "posicao": 4, "pontos": 0, "jogos": 1, "saldo": -2 }
+    ]
+  },
+  "artilheiros": [
+    { "nome": "Vinícius Jr.", "time": "Brasil", "gols": 2 },
+    { "nome": "Rodrygo", "time": "Brasil", "gols": 1 }
+  ]
+}
