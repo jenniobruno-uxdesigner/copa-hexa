@@ -1,0 +1,14 @@
+{
+  "standings": { "standings": [
+    { "type": "TOTAL", "group": "GROUP_G", "table": [
+      { "position": 1, "team": { "name": "Brazil" }, "points": 6, "playedGames": 2, "goalDifference": 3 },
+      { "position": 2, "team": { "name": "Switzerland" }, "points": 3, "playedGames": 2, "goalDifference": 0 }
+    ] }
+  ] },
+  "matches": { "matches": [
+    { "id": 100, "homeTeam": { "name": "Brazil" }, "awayTeam": { "name": "Serbia" }, "utcDate": "2026-06-28T19:00:00Z", "status": "TIMED", "stage": "GROUP_STAGE", "group": "GROUP_G", "score": { "fullTime": { "home": null, "away": null }, "winner": null, "penalties": null } }
+  ] },
+  "scorers": { "scorers": [
+    { "player": { "name": "Vinicius" }, "team": { "name": "Brazil" }, "goals": 3 }
+  ] }
+}
