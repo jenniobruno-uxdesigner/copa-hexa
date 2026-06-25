@@ -95,16 +95,20 @@ function jogosDoBrasil(matchesRaw) {
     .sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate));
 }
 
-function brasilVenceu(m) {
-  const ehCasa = m.homeTeam.name === TIME_BRASIL;
+// 'vitoria' | 'derrota' | 'indefinido'. "indefinido" cobre dados ainda não
+// preenchidos (winner nulo, sem pênaltis) — nunca afirma derrota sem certeza.
+function resultadoBrasil(m) {
+  if (!m || !m.score) return 'indefinido';
+  const ehCasa = m.homeTeam && m.homeTeam.name === TIME_BRASIL;
   const w = m.score.winner;
-  if (w === 'HOME_TEAM') return ehCasa;
-  if (w === 'AWAY_TEAM') return !ehCasa;
+  if (w === 'HOME_TEAM') return ehCasa ? 'vitoria' : 'derrota';
+  if (w === 'AWAY_TEAM') return ehCasa ? 'derrota' : 'vitoria';
   const pen = m.score.penalties;
   if (pen && pen.home != null && pen.away != null) {
-    return ehCasa ? pen.home > pen.away : pen.away > pen.home;
+    const venceuNosPenaltis = ehCasa ? pen.home > pen.away : pen.away > pen.home;
+    return venceuNosPenaltis ? 'vitoria' : 'derrota';
   }
-  return false;
+  return 'indefinido';
 }
 
 export function derivarEstado(grupo, proximoJogo, matchesRaw, vagasNoGrupo = 2) {
@@ -117,25 +121,39 @@ export function derivarEstado(grupo, proximoJogo, matchesRaw, vagasNoGrupo = 2) 
     proximoAdversario: proximoJogo ? proximoJogo.adversario : null,
   };
 
-  if (jogos.some((m) => m.stage === 'FINAL' && FINALIZADOS.has(m.status) && brasilVenceu(m))) {
+  // Campeão: venceu a final.
+  const venceuFinal = jogos.some(
+    (m) => m.stage === 'FINAL' && FINALIZADOS.has(m.status) && resultadoBrasil(m) === 'vitoria'
+  );
+  if (venceuFinal) {
     return { ...base, situacao: 'campeao' };
   }
 
-  const pendentes = jogos.filter((m) => !FINALIZADOS.has(m.status));
+  // "Pendente" = jogo realmente por vir (mesmo vocabulário do próximo jogo).
+  const pendentes = jogos.filter((m) => PENDENTES.has(m.status));
 
+  // Ainda tem jogo de mata-mata pela frente.
   if (pendentes.some((m) => m.stage !== 'GROUP_STAGE')) {
     return { ...base, situacao: 'mata-mata' };
   }
 
-  const perdeuMataMata = jogos.some(
-    (m) => m.stage !== 'GROUP_STAGE' && FINALIZADOS.has(m.status) && !brasilVenceu(m)
-  );
-  if (perdeuMataMata && pendentes.length === 0) {
-    return { ...base, situacao: 'eliminado' };
-  }
+  if (pendentes.length === 0) {
+    // Sem jogos pela frente: o destino é o do último jogo de mata-mata
+    // finalizado. Só perder o ÚLTIMO mata-mata elimina (resolve a disputa de
+    // 3º lugar: perder a semi mas ganhar o bronze não é "eliminado").
+    const ultimoMataMata = [...jogos]
+      .reverse()
+      .find((m) => m.stage !== 'GROUP_STAGE' && FINALIZADOS.has(m.status));
+    if (ultimoMataMata) {
+      const eliminado = resultadoBrasil(ultimoMataMata) === 'derrota';
+      return { ...base, situacao: eliminado ? 'eliminado' : 'mata-mata' };
+    }
 
-  if (pendentes.length === 0 && base.posicaoGrupo > vagasNoGrupo) {
-    return { ...base, situacao: 'eliminado' };
+    // Fase de grupos encerrada: caiu se ficou fora das vagas. Só afirma isso
+    // quando há dados de grupo — sem dados, não declara eliminação.
+    if (brasil && base.posicaoGrupo > vagasNoGrupo) {
+      return { ...base, situacao: 'eliminado' };
+    }
   }
 
   return { ...base, situacao: 'grupos' };

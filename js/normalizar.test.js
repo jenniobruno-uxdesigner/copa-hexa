@@ -136,6 +136,37 @@ test('estado: eliminado na fase de grupos (fora das vagas, sem jogos)', () => {
   assert.equal(e.situacao, 'eliminado');
 });
 
+test('estado: perdeu a semi mas venceu o 3º lugar NÃO é eliminado', () => {
+  const matches = { matches: [
+    jogoBrasil({ stage: 'SEMI_FINALS', utcDate: '2026-07-14T19:00:00Z', status: 'FINISHED', score: { fullTime: { home: 1, away: 2 }, winner: 'AWAY_TEAM', penalties: null } }),
+    jogoBrasil({ stage: 'THIRD_PLACE', utcDate: '2026-07-18T19:00:00Z', status: 'FINISHED', score: { fullTime: { home: 3, away: 1 }, winner: 'HOME_TEAM', penalties: null } }),
+  ] };
+  const e = derivarEstado(grupoBrasil1o, null, matches);
+  assert.notEqual(e.situacao, 'eliminado');
+  assert.equal(e.situacao, 'mata-mata');
+});
+
+test('estado: campeão jogando como visitante (winner AWAY_TEAM)', () => {
+  const matches = { matches: [jogoBrasil({ homeTeam: { name: 'Argentina' }, awayTeam: { name: 'Brazil' }, stage: 'FINAL', status: 'FINISHED', score: { fullTime: { home: 0, away: 1 }, winner: 'AWAY_TEAM', penalties: null } })] };
+  const e = derivarEstado(grupoBrasil1o, null, matches);
+  assert.equal(e.situacao, 'campeao');
+});
+
+test('estado: mata-mata finalizado com resultado indefinido não vira eliminado', () => {
+  const matches = { matches: [jogoBrasil({ stage: 'LAST_16', status: 'FINISHED', score: { fullTime: { home: 1, away: 1 }, winner: null, penalties: null } })] };
+  const e = derivarEstado(grupoBrasil1o, null, matches);
+  assert.notEqual(e.situacao, 'eliminado');
+});
+
+test('montarDados com entrada vazia devolve um contrato válido', () => {
+  const d = montarDados({});
+  assert.equal(d.fonte, 'api');
+  assert.equal(d.proximoJogo, null);
+  assert.equal(d.grupo, null);
+  assert.deepEqual(d.artilheiros, []);
+  assert.equal(d.estado.situacao, 'grupos');
+});
+
 test('montarDados compõe o contrato completo com fonte api', () => {
   const raw = {
     standings: { standings: [ { type: 'TOTAL', group: 'GROUP_G', table: [
