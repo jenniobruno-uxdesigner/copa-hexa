@@ -172,3 +172,21 @@ export function montarDados(raw, agora = new Date()) {
     artilheiros: artilheiros(raw.scorers || {}),
   };
 }
+
+export function montarResultados(matchesRaw) {
+  const resultados = {};
+  for (const m of matchesRaw.matches || []) {
+    const ehCasa = m.homeTeam && m.homeTeam.name === TIME_BRASIL;
+    const ehFora = m.awayTeam && m.awayTeam.name === TIME_BRASIL;
+    if (!ehCasa && !ehFora) continue;
+    if (!FINALIZADOS.has(m.status)) continue;
+    if (!m.score || !m.score.fullTime) continue;
+
+    const id = m.id != null ? String(m.id) : `${m.homeTeam.name}-${m.awayTeam.name}-${m.utcDate}`;
+    const ft = m.score.fullTime;
+    resultados[id] = ehCasa
+      ? { placarBrasil: ft.home, placarAdversario: ft.away }
+      : { placarBrasil: ft.away, placarAdversario: ft.home };
+  }
+  return resultados;
+}

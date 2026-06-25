@@ -183,3 +183,23 @@ test('montarDados compõe o contrato completo com fonte api', () => {
   assert.equal(d.grupo.nome, 'Grupo G');
   assert.equal(d.artilheiros[0].nome, 'Vinicius');
 });
+
+import { montarResultados } from './normalizar.js';
+
+test('montarResultados mapeia jogos encerrados do Brasil (casa e fora)', () => {
+  const raw = { matches: [
+    { id: 100, homeTeam: { name: 'Brazil' }, awayTeam: { name: 'Serbia' }, status: 'FINISHED', stage: 'GROUP_STAGE', utcDate: '2026-06-24T19:00:00Z', score: { fullTime: { home: 2, away: 0 } } },
+    { id: 101, homeTeam: { name: 'Switzerland' }, awayTeam: { name: 'Brazil' }, status: 'FINISHED', stage: 'GROUP_STAGE', utcDate: '2026-06-28T19:00:00Z', score: { fullTime: { home: 1, away: 3 } } },
+    { id: 102, homeTeam: { name: 'Brazil' }, awayTeam: { name: 'Cameroon' }, status: 'TIMED', stage: 'GROUP_STAGE', utcDate: '2026-07-02T19:00:00Z', score: { fullTime: { home: null, away: null } } },
+    { id: 200, homeTeam: { name: 'France' }, awayTeam: { name: 'Spain' }, status: 'FINISHED', stage: 'GROUP_STAGE', utcDate: '2026-06-24T19:00:00Z', score: { fullTime: { home: 1, away: 1 } } },
+  ] };
+  const r = montarResultados(raw);
+  assert.deepEqual(r['100'], { placarBrasil: 2, placarAdversario: 0 });
+  assert.deepEqual(r['101'], { placarBrasil: 3, placarAdversario: 1 });
+  assert.equal(r['102'], undefined);
+  assert.equal(r['200'], undefined);
+});
+
+test('montarResultados com entrada vazia devolve objeto vazio', () => {
+  assert.deepEqual(montarResultados({}), {});
+});
