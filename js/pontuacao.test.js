@@ -17,6 +17,11 @@ test('acertar o empate (placares diferentes) vale 1 ponto', () => {
   assert.equal(p, 1);
 });
 
+test('acertar uma derrota do Brasil vale 1 ponto', () => {
+  const p = pontuarPalpite({ placarBrasil: 0, placarAdversario: 2 }, { placarBrasil: 1, placarAdversario: 3 });
+  assert.equal(p, 1);
+});
+
 test('errar o resultado vale 0', () => {
   const p = pontuarPalpite({ placarBrasil: 2, placarAdversario: 1 }, { placarBrasil: 0, placarAdversario: 1 });
   assert.equal(p, 0);

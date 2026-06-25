@@ -27,3 +27,15 @@ test('o percentual é arredondado e relativo ao total', () => {
   ]);
   assert.equal(v.placares[0].percentual, 50);
 });
+
+test('percentuais arredondados não precisam somar 100', () => {
+  const v = calcularVibe([
+    { placarBrasil: 1, placarAdversario: 0 },
+    { placarBrasil: 2, placarAdversario: 0 },
+    { placarBrasil: 3, placarAdversario: 0 },
+  ]);
+  assert.deepEqual(
+    v.placares.map((p) => p.percentual),
+    [33, 33, 33]
+  );
+});
