@@ -81,3 +81,74 @@ test('artilheiros cai para a lista geral quando não há brasileiro', () => {
   assert.equal(a.length, 2);
   assert.equal(a[0].nome, 'Jogador A');
 });
+
+import { derivarEstado, montarDados } from './normalizar.js';
+
+const grupoBrasil1o = { nome: 'Grupo G', times: [
+  { nome: 'Brasil', posicao: 1, pontos: 6, jogos: 2, saldo: 3 },
+  { nome: 'Suíça', posicao: 2, pontos: 3, jogos: 2, saldo: 0 },
+] };
+const grupoBrasil3o = { nome: 'Grupo G', times: [
+  { nome: 'Suíça', posicao: 1, pontos: 6, jogos: 3, saldo: 4 },
+  { nome: 'Sérvia', posicao: 2, pontos: 4, jogos: 3, saldo: 1 },
+  { nome: 'Brasil', posicao: 3, pontos: 3, jogos: 3, saldo: -1 },
+] };
+
+function jogoBrasil(over) {
+  return { homeTeam: { name: 'Brazil' }, awayTeam: { name: 'Serbia' }, utcDate: '2026-06-28T19:00:00Z', status: 'TIMED', stage: 'GROUP_STAGE', group: 'GROUP_G', score: { fullTime: { home: null, away: null }, winner: null, penalties: null }, ...over };
+}
+
+test('estado: ainda na fase de grupos com jogo pendente', () => {
+  const matches = { matches: [jogoBrasil({})] };
+  const e = derivarEstado(grupoBrasil1o, { adversario: 'Sérvia' }, matches);
+  assert.equal(e.situacao, 'grupos');
+  assert.equal(e.posicaoGrupo, 1);
+  assert.equal(e.proximoAdversario, 'Sérvia');
+});
+
+test('estado: mata-mata quando há jogo de mata-mata pela frente', () => {
+  const matches = { matches: [jogoBrasil({ stage: 'LAST_16', status: 'TIMED' })] };
+  const e = derivarEstado(grupoBrasil1o, { adversario: 'Sérvia' }, matches);
+  assert.equal(e.situacao, 'mata-mata');
+});
+
+test('estado: campeão quando venceu a final', () => {
+  const matches = { matches: [jogoBrasil({ stage: 'FINAL', status: 'FINISHED', score: { fullTime: { home: 2, away: 1 }, winner: 'HOME_TEAM', penalties: null } })] };
+  const e = derivarEstado(grupoBrasil1o, null, matches);
+  assert.equal(e.situacao, 'campeao');
+});
+
+test('estado: campeão venceu a final nos pênaltis', () => {
+  const matches = { matches: [jogoBrasil({ stage: 'FINAL', status: 'FINISHED', score: { fullTime: { home: 1, away: 1 }, winner: 'DRAW', penalties: { home: 4, away: 2 } } })] };
+  const e = derivarEstado(grupoBrasil1o, null, matches);
+  assert.equal(e.situacao, 'campeao');
+});
+
+test('estado: eliminado ao perder no mata-mata sem mais jogos', () => {
+  const matches = { matches: [jogoBrasil({ stage: 'LAST_16', status: 'FINISHED', score: { fullTime: { home: 0, away: 1 }, winner: 'AWAY_TEAM', penalties: null } })] };
+  const e = derivarEstado(grupoBrasil1o, null, matches);
+  assert.equal(e.situacao, 'eliminado');
+});
+
+test('estado: eliminado na fase de grupos (fora das vagas, sem jogos)', () => {
+  const matches = { matches: [jogoBrasil({ status: 'FINISHED', score: { fullTime: { home: 0, away: 1 }, winner: 'AWAY_TEAM', penalties: null } })] };
+  const e = derivarEstado(grupoBrasil3o, null, matches);
+  assert.equal(e.situacao, 'eliminado');
+});
+
+test('montarDados compõe o contrato completo com fonte api', () => {
+  const raw = {
+    standings: { standings: [ { type: 'TOTAL', group: 'GROUP_G', table: [
+      { position: 1, team: { name: 'Brazil' }, points: 6, playedGames: 2, goalDifference: 3 },
+    ] } ] },
+    matches: { matches: [jogoBrasil({})] },
+    scorers: { scorers: [ { player: { name: 'Vinicius' }, team: { name: 'Brazil' }, goals: 3 } ] },
+  };
+  const d = montarDados(raw, new Date('2026-06-25T12:00:00Z'));
+  assert.equal(d.fonte, 'api');
+  assert.equal(d.atualizadoEm, '2026-06-25T12:00:00.000Z');
+  assert.equal(d.estado.situacao, 'grupos');
+  assert.equal(d.proximoJogo.adversario, 'Sérvia');
+  assert.equal(d.grupo.nome, 'Grupo G');
+  assert.equal(d.artilheiros[0].nome, 'Vinicius');
+});
