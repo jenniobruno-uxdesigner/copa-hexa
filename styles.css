@@ -1,173 +1,262 @@
+/* =========================================================================
+   Copa pra Leigos — sistema visual "painel de pôster"
+   Paleta: poster "Rumo ao Hexa" (verde/ouro/creme) + FIFA "A maior Copa" (verde/azul/amarelo vivos)
+   Tipos: Clash Display (manchetes) · Satoshi (texto) · Space Mono (dados/ingresso)
+   ========================================================================= */
+
 :root {
-  --verde: #009c3b;
-  --amarelo: #ffdf00;
-  --azul: #002776;
-  --branco: #ffffff;
-  --texto: #14213d;
-  --alerta: #f4a300;
-  --perigo: #c1121f;
-  --sombra: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --raio: 16px;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --creme: #f4ecd6;
+  --creme-2: #ece0c2;
+  --noite: #08160d;
+  --noite-2: #0e2718;
+  --verde: #00a94f;
+  --verde-esc: #0b7a3b;
+  --ouro: #ffcb05;
+  --azul: #2348c6;
+  --coral: #ff4e2b;
+  --tinta: #13211a;
+
+  --display: "Clash Display", "Arial Narrow", system-ui, sans-serif;
+  --corpo: "Satoshi", system-ui, -apple-system, sans-serif;
+  --mono: "Space Mono", ui-monospace, monospace;
+
+  --raio: 18px;
+  --sombra: 0 18px 40px rgba(8, 22, 13, 0.18);
+  --borda-forte: 3px solid var(--tinta);
 }
 
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
-  color: var(--texto);
+  font-family: var(--corpo);
+  color: var(--tinta);
+  background: var(--creme);
+  line-height: 1.55;
+  overflow-x: clip;
+}
+
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 0.92; margin: 0; }
+
+/* ---------- Painéis ---------- */
+.panel { position: relative; padding: clamp(3rem, 8vw, 6rem) 1.25rem; overflow: hidden; }
+.bloco { max-width: 1000px; margin: 0 auto; }
+
+.panel--creme { background: var(--creme); color: var(--tinta); }
+.panel--creme::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
   background:
-    radial-gradient(circle at 20% 10%, rgba(255, 223, 0, 0.25), transparent 40%),
-    radial-gradient(circle at 80% 0%, rgba(0, 156, 59, 0.25), transparent 40%),
-    var(--branco);
-  line-height: 1.5;
+    radial-gradient(circle at 12% 18%, rgba(0, 169, 79, 0.10), transparent 38%),
+    radial-gradient(circle at 88% 12%, rgba(255, 203, 5, 0.16), transparent 40%);
+}
+.panel--verde { background: var(--verde); color: #04240f; }
+.panel--noite { background: var(--noite); color: var(--creme); }
+.panel--noite .titulo-secao { color: var(--creme); }
+.panel--gradiente {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 203, 5, 0.35), transparent 45%),
+    linear-gradient(135deg, var(--verde) 0%, var(--verde-esc) 45%, var(--azul) 100%);
+  color: #fff;
 }
 
-main { max-width: 720px; margin: 0 auto; padding: 0 1rem 4rem; }
-
-section { margin: 2.5rem 0; }
-
-h2 { font-size: 1.5rem; margin-bottom: 0.75rem; }
-
-/* Topo */
-.topo {
-  text-align: center;
-  padding: 2.5rem 1rem 2rem;
-  background: linear-gradient(135deg, var(--verde), var(--azul));
-  color: var(--branco);
+/* ---------- Eyebrow / títulos ---------- */
+.eyebrow {
+  font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.18em;
+  font-size: 0.78rem; font-weight: 700; margin: 0 0 1rem;
+  color: var(--verde-esc); display: inline-block;
 }
-.topo__titulo { font-size: 2rem; margin: 0 0 1.5rem; }
+.eyebrow--claro { color: rgba(255, 255, 255, 0.85); }
+.panel--verde .eyebrow--claro { color: #04240f; }
 
-/* Termômetro */
+.titulo-secao {
+  font-size: clamp(2.2rem, 6vw, 4rem); text-transform: uppercase;
+  letter-spacing: -0.01em; margin-bottom: 1.25rem; max-width: 16ch;
+}
+.titulo-secao--claro { color: #fff; }
+
+/* ---------- HERO ---------- */
+.hero { min-height: 92vh; display: flex; align-items: center; }
+.hero__conteudo { max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
+.hero__titulo {
+  font-size: clamp(3.5rem, 17vw, 11rem);
+  text-transform: uppercase; letter-spacing: -0.02em; margin: 0.5rem 0 1rem;
+}
+.hero__titulo .linha { display: block; }
+.hero__titulo .linha--ouro {
+  color: var(--ouro);
+  -webkit-text-stroke: 2px var(--tinta);
+  text-stroke: 2px var(--tinta);
+}
+.hero__tagline { font-size: clamp(1.05rem, 2.5vw, 1.5rem); max-width: 32ch; margin: 0 0 2rem; font-weight: 500; }
+
+.hero__brushes { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.brush { position: absolute; border-radius: 40% 60% 55% 45%; filter: blur(2px); opacity: 0.55; }
+.brush--verde { width: 46vw; height: 22vh; right: -8vw; top: 8%; background: var(--verde); transform: rotate(-12deg); }
+.brush--ouro { width: 34vw; height: 14vh; right: 4vw; top: 40%; background: var(--ouro); transform: rotate(6deg); }
+
+.hero__bola {
+  position: absolute; right: 6vw; bottom: 8vh; font-size: clamp(3rem, 9vw, 7rem);
+  z-index: 3; cursor: grab; user-select: none; will-change: transform;
+  animation: flutuaBola 4s ease-in-out infinite;
+}
+@keyframes flutuaBola { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-18px) rotate(20deg); } }
+
+/* ---------- Marquee ---------- */
+.marquee {
+  background: var(--ouro); color: var(--tinta);
+  border-top: var(--borda-forte); border-bottom: var(--borda-forte);
+  overflow: hidden; white-space: nowrap; padding: 0.55rem 0;
+}
+.marquee__trilho { display: inline-flex; animation: rolar 22s linear infinite; }
+.marquee--reverso { background: var(--verde); color: #04240f; }
+.marquee--reverso .marquee__trilho { animation-direction: reverse; }
+.marquee__trilho span {
+  font-family: var(--display); font-weight: 700; text-transform: uppercase;
+  font-size: 1.4rem; letter-spacing: 0.02em; padding-right: 1rem;
+}
+@keyframes rolar { to { transform: translateX(-50%); } }
+
+/* ---------- Termômetro (medidor de pôster) ---------- */
 .termometro {
-  max-width: 520px;
-  margin: 0 auto;
-  background: var(--branco);
-  color: var(--texto);
-  border-radius: var(--raio);
-  padding: 1.5rem;
-  box-shadow: var(--sombra);
-  border-top: 8px solid var(--verde);
+  background: #fff; color: var(--tinta); border: var(--borda-forte);
+  border-radius: var(--raio); padding: 1.5rem; max-width: 560px;
+  box-shadow: var(--sombra); position: relative;
 }
-.termometro__emoji { font-size: 3rem; line-height: 1; }
-.termometro__titulo { margin: 0.5rem 0; }
-.termometro__detalhe { margin: 0; }
-.termometro.nivel-alerta { border-top-color: var(--alerta); }
-.termometro.nivel-eliminado { border-top-color: var(--perigo); }
-.termometro.nivel-no-caminho { border-top-color: var(--amarelo); }
-.termometro.nivel-muito-bem,
-.termometro.nivel-hexa { border-top-color: var(--verde); }
+.termometro__topo { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+.termometro__farol { font-size: 3rem; line-height: 1; }
+.termometro__nivel { font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 2.4rem); }
+.termometro__detalhe { margin: 0.5rem 0 1rem; font-size: 1.05rem; }
+.termometro__medidor { display: flex; gap: 6px; }
+.termometro__seg { flex: 1; height: 14px; border-radius: 6px; background: #e3dcc7; }
+.termometro__seg.ativo { background: var(--verde); }
+.termometro.nivel-alerta .termometro__seg.ativo { background: var(--ouro); }
+.termometro.nivel-eliminado .termometro__seg.ativo { background: var(--coral); }
+.termometro.nivel-no-caminho .termometro__seg.ativo { background: var(--ouro); }
+.termometro.nivel-hexa .termometro__seg.ativo { background: var(--verde); }
 
-/* Intro */
-.intro {
-  background: var(--amarelo);
-  border-radius: var(--raio);
-  padding: 1.5rem;
+/* ---------- Próximo jogo (ingresso) ---------- */
+.proximo .bloco { display: grid; gap: 1.5rem; }
+.ticket {
+  background: var(--noite); color: var(--creme); border-radius: var(--raio);
+  padding: clamp(1.5rem, 4vw, 2.5rem); position: relative; box-shadow: var(--sombra);
+  border: 2px solid var(--noite);
+  background-image: radial-gradient(circle at 0 50%, var(--creme) 12px, transparent 13px),
+                    radial-gradient(circle at 100% 50%, var(--creme) 12px, transparent 13px);
+}
+.ticket__top { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.15em; font-size: 0.75rem; color: var(--ouro); margin-bottom: 0.75rem; }
+.ticket__confronto { font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: clamp(2rem, 7vw, 4rem); line-height: 0.95; }
+.ticket__confronto .x { color: var(--ouro); margin: 0 0.4rem; }
+.ticket__linha { border: 0; border-top: 2px dashed rgba(244, 236, 214, 0.4); margin: 1.25rem 0; }
+.ticket__meta { display: flex; flex-wrap: wrap; gap: 1.5rem; font-family: var(--mono); }
+.ticket__meta b { display: block; color: var(--ouro); font-size: 0.7rem; letter-spacing: 0.12em; }
+.ticket__oque {
+  background: var(--ouro); color: var(--tinta); border-radius: 14px;
+  padding: 1.1rem 1.25rem; font-weight: 700; font-size: 1.05rem;
 }
 
-/* Próximo jogo */
-.proximo__adversario { font-size: 1.5rem; font-weight: 700; }
-.proximo__adversario span { color: var(--verde); margin: 0 0.4rem; }
-.proximo__quando { font-weight: 600; }
-.proximo__fase { opacity: 0.7; }
+/* ---------- Grupo (tabela) ---------- */
+.grupo__tabela { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+.grupo__tabela th, .grupo__tabela td { padding: 0.85rem 0.6rem; text-align: left; border-bottom: 1px solid rgba(244, 236, 214, 0.16); }
+.grupo__tabela th { font-family: var(--mono); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.12em; color: var(--ouro); }
+.grupo__tabela td { font-size: 1.05rem; }
+.grupo__tabela td:nth-child(3), .grupo__tabela td:nth-child(4), .grupo__tabela td:nth-child(5) { font-family: var(--mono); }
+.grupo__tabela tr.destaque td { background: var(--ouro); color: var(--tinta); font-weight: 700; }
+.grupo__tabela tr.destaque td:first-child { border-radius: 10px 0 0 10px; }
+.grupo__tabela tr.destaque td:last-child { border-radius: 0 10px 10px 0; }
+.grupo__legenda { opacity: 0.8; font-family: var(--mono); font-size: 0.85rem; }
 
-/* Tabela do grupo */
-.grupo__tabela { width: 100%; border-collapse: collapse; }
-.grupo__tabela th,
-.grupo__tabela td { padding: 0.6rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
-.grupo__tabela tr.destaque { background: rgba(255, 223, 0, 0.35); font-weight: 700; }
-.grupo__legenda { opacity: 0.75; }
-
-/* Craques */
-.craques { list-style: none; padding: 0; display: grid; gap: 0.5rem; }
+/* ---------- Craques ---------- */
+.craques { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: 0.85rem; grid-template-columns: 1fr; }
 .craques li {
-  display: flex; align-items: center; gap: 0.75rem;
-  background: var(--branco); border-radius: 12px; padding: 0.75rem 1rem;
-  box-shadow: var(--sombra);
+  display: flex; align-items: center; gap: 1rem; background: #fff;
+  border: var(--borda-forte); border-radius: 14px; padding: 1rem 1.25rem;
+  box-shadow: 6px 6px 0 var(--verde); transition: transform 0.15s ease;
 }
-.craque__nome { font-weight: 700; }
-.craque__time { opacity: 0.7; }
-.craque__gols { margin-left: auto; font-weight: 700; color: var(--verde); }
+.craques li:hover { transform: translate(-2px, -2px); }
+.craque__nome { font-family: var(--display); font-weight: 700; font-size: 1.3rem; text-transform: uppercase; }
+.craque__time { font-family: var(--mono); font-size: 0.8rem; opacity: 0.7; }
+.craque__gols { margin-left: auto; font-family: var(--display); font-weight: 700; font-size: 1.5rem; color: var(--verde-esc); }
 
-/* Glossário */
-.glossario { display: grid; gap: 1rem; }
-.glossario__card {
-  background: var(--branco); border-radius: var(--raio);
-  padding: 1.25rem; box-shadow: var(--sombra); border-left: 6px solid var(--azul);
+/* ---------- Palpite ---------- */
+.palpite .bloco { display: grid; gap: 1.5rem; }
+.palpite__jogo { font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: clamp(1.5rem, 5vw, 2.5rem); }
+.palpite__form { display: grid; gap: 0.85rem; max-width: 460px; }
+.palpite__apelido { padding: 0.85rem 1rem; border: 2px solid var(--noite-2); border-radius: 12px; font-size: 1rem; font-family: var(--corpo); background: rgba(255,255,255,0.06); color: var(--creme); }
+.palpite__apelido::placeholder { color: rgba(244,236,214,0.5); }
+.palpite__placar { display: flex; align-items: center; gap: 0.6rem; font-family: var(--display); text-transform: uppercase; font-size: 1.2rem; }
+.palpite__placar select { padding: 0.5rem; border-radius: 10px; font-family: var(--mono); font-size: 1rem; border: 2px solid var(--ouro); background: #fff; }
+.palpite__form button, .botao-copiar, .botao-wpp {
+  font-family: var(--display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+  border: 0; border-radius: 12px; padding: 0.85rem 1.25rem; cursor: pointer; font-size: 1.05rem;
 }
-.glossario__card h3 { margin: 0 0 0.5rem; color: var(--azul); }
-.glossario__legenda { opacity: 0.75; }
+.palpite__form button { background: var(--ouro); color: var(--tinta); }
+.palpite__form button:hover { background: #ffd633; }
+.palpite__status { font-weight: 700; min-height: 1.2em; color: var(--ouro); }
+.palpite__vibe h3, .palpite__ranking h3 { font-family: var(--display); text-transform: uppercase; font-size: 1.3rem; margin: 0 0 0.6rem; }
+.vibe { list-style: none; padding: 0; display: grid; gap: 0.5rem; }
+.vibe li { display: grid; grid-template-columns: minmax(70px, auto) 1fr auto; align-items: center; gap: 0.6rem; }
+.vibe__rotulo { font-family: var(--mono); font-size: 0.8rem; }
+.vibe__barra { background: rgba(244,236,214,0.15); border-radius: 999px; overflow: hidden; height: 12px; }
+.vibe__barra span { display: block; height: 100%; background: linear-gradient(90deg, var(--ouro), var(--verde)); }
+.vibe__pct { font-family: var(--mono); font-weight: 700; }
+.ranking { list-style: none; padding: 0; counter-reset: r; display: grid; gap: 0.4rem; }
+.ranking li { display: flex; gap: 0.75rem; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.05); border-radius: 10px; }
+.rank__pos { font-family: var(--display); font-weight: 700; color: var(--ouro); min-width: 2ch; }
+.rank__pts { margin-left: auto; font-family: var(--mono); font-weight: 700; color: var(--verde); }
 
-@media (min-width: 560px) {
+/* ---------- Jogo de pênalti ---------- */
+.jogo-secao__dica { max-width: 44ch; margin: 0 0 1.5rem; font-size: 1.05rem; }
+.jogo { display: grid; justify-items: center; gap: 0.75rem; }
+.jogo__canvas {
+  width: 100%; max-width: 480px; aspect-ratio: 3 / 4; touch-action: none;
+  background: #0a3d1f; border: var(--borda-forte); border-radius: var(--raio);
+  box-shadow: var(--sombra); display: block;
+}
+.jogo__msg { font-family: var(--display); font-weight: 700; text-transform: uppercase; font-size: 1.4rem; min-height: 1.4em; text-align: center; }
+.jogo__placar { font-family: var(--mono); font-weight: 700; }
+
+/* ---------- Glossário ---------- */
+.glossario { display: grid; gap: 1rem; grid-template-columns: 1fr; margin-top: 1rem; }
+.glossario__legenda { font-family: var(--mono); font-size: 0.85rem; opacity: 0.75; }
+.glossario__card { background: #fff; border: var(--borda-forte); border-radius: var(--raio); padding: 1.25rem 1.5rem; box-shadow: 6px 6px 0 var(--azul); }
+.glossario__card h3 { font-size: 1.4rem; text-transform: uppercase; color: var(--azul); margin-bottom: 0.5rem; }
+
+/* ---------- Termos inline ---------- */
+.termo { border: 0; background: none; padding: 0; cursor: pointer; color: inherit; font: inherit; font-weight: 700; border-bottom: 2px dotted currentColor; }
+.termo-balao {
+  position: absolute; max-width: 280px; z-index: 60; background: var(--noite); color: var(--creme);
+  padding: 0.85rem 1.1rem; border-radius: 12px; box-shadow: var(--sombra); font-size: 0.95rem; border: 2px solid var(--ouro);
+}
+
+/* ---------- Compartilhar ---------- */
+.compartilhar { text-align: center; }
+.compartilhar .titulo-secao { margin-inline: auto; }
+.compartilhar__botoes { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+.botao-wpp { background: #25d366; color: #04240f; text-decoration: none; display: inline-block; }
+.botao-copiar { background: var(--ouro); color: var(--tinta); }
+.compartilhar__status { font-family: var(--mono); margin-top: 0.75rem; min-height: 1.2em; color: var(--ouro); }
+
+/* ---------- Bolinhas no cursor ---------- */
+.cursor-bola { position: fixed; transform: translate(-50%, -50%); pointer-events: none; z-index: 9998; font-size: 1.1rem; animation: subirBola 0.9s ease-out forwards; }
+@keyframes subirBola { to { transform: translate(-50%, -160%) scale(0.4) rotate(180deg); opacity: 0; } }
+
+/* ---------- Reveal no scroll ---------- */
+.reveal { opacity: 0; transform: translateY(48px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.reveal.visivel { opacity: 1; transform: none; }
+
+/* ---------- Responsivo ---------- */
+@media (min-width: 680px) {
+  .craques { grid-template-columns: 1fr 1fr; }
   .glossario { grid-template-columns: 1fr 1fr; }
 }
-
-/* Palpite */
-.palpite__form { display: grid; gap: 0.75rem; max-width: 420px; }
-.palpite__apelido { padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 1rem; }
-.palpite__placar { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
-.palpite__placar select { padding: 0.4rem; border-radius: 8px; }
-.palpite__form button { background: var(--verde); color: var(--branco); border: 0; border-radius: 10px; padding: 0.7rem 1rem; font-weight: 700; cursor: pointer; }
-.palpite__status { font-weight: 600; min-height: 1.2em; }
-.vibe { list-style: none; padding: 0; display: grid; gap: 0.4rem; }
-.vibe li { display: grid; grid-template-columns: 1fr 2fr auto; align-items: center; gap: 0.5rem; }
-.vibe__barra { background: #e5e7eb; border-radius: 999px; overflow: hidden; height: 10px; }
-.vibe__barra span { display: block; height: 100%; background: var(--amarelo); }
-.ranking { padding-left: 1.2rem; display: grid; gap: 0.3rem; }
-.ranking li { display: flex; gap: 0.5rem; }
-.rank__pts { margin-left: auto; font-weight: 700; color: var(--verde); }
-
-/* Termos inline */
-.termo {
-  border: 0; background: none; padding: 0; cursor: pointer;
-  color: var(--azul); font: inherit; font-weight: 700;
-  border-bottom: 2px dotted var(--azul);
-}
-.termo-balao {
-  position: absolute; max-width: 280px; z-index: 50;
-  background: var(--azul); color: var(--branco);
-  padding: 0.75rem 1rem; border-radius: 12px; box-shadow: var(--sombra);
-  font-size: 0.95rem;
+@media (min-width: 900px) {
+  .panel { padding-inline: 2rem; }
 }
 
-/* Bolinhas no cursor */
-.cursor-bola {
-  position: fixed; transform: translate(-50%, -50%);
-  pointer-events: none; z-index: 9998; font-size: 1.1rem;
-  animation: subirBola 0.9s ease-out forwards;
-}
-@keyframes subirBola {
-  to { transform: translate(-50%, -160%) scale(0.4) rotate(180deg); opacity: 0; }
-}
-
-/* Joguinho */
-.joguinho {
-  background: linear-gradient(135deg, var(--verde), var(--azul));
-  color: var(--branco); border-radius: var(--raio);
-  padding: 1.25rem; text-align: center; margin-bottom: 1.5rem;
-}
-.joguinho__gol { font-size: 3rem; line-height: 1; }
-.joguinho__dica { opacity: 0.9; margin: 0.25rem 0 1rem; }
-.joguinho__botoes { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
-.joguinho__botoes button {
-  background: var(--amarelo); color: var(--texto); border: 0;
-  border-radius: 10px; padding: 0.6rem 0.9rem; font-weight: 700; cursor: pointer;
-}
-.joguinho__msg { font-weight: 700; min-height: 1.4em; margin: 0.75rem 0 0; }
-.joguinho__placar { margin: 0.25rem 0 0; opacity: 0.9; }
-
-/* Compartilhar */
-.compartilhar { text-align: center; }
-.compartilhar__botoes { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
-.botao-wpp {
-  background: #25d366; color: #fff; text-decoration: none;
-  padding: 0.7rem 1.1rem; border-radius: 10px; font-weight: 700;
-}
-.botao-copiar {
-  background: var(--azul); color: #fff; border: 0;
-  padding: 0.7rem 1.1rem; border-radius: 10px; font-weight: 700; cursor: pointer;
-}
-
+/* ---------- Reduzir movimento ---------- */
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .reveal { opacity: 1; transform: none; }
 }

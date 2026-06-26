@@ -1,8 +1,9 @@
 import * as render from './render.js';
 import { dispararConfete } from './confete.js';
 import { ativarCursorBolas } from './cursor-bolas.js';
-import { montarJoguinho } from './joguinho.js';
+import { montarJogoGol } from './jogo-gol.js';
 import { ativarTooltipsTermos } from './termos-inline.js';
+import { ativarReveals } from './animacoes.js';
 
 async function carregarDados() {
   try {
@@ -92,11 +93,12 @@ async function init() {
     url: location.href,
     texto: 'Temos chance ao hexa? Entenda a Copa sem saber nada de futebol:',
   });
-  montarJoguinho(document.querySelector('#joguinho'), {
-    onGol: () => dispararConfete({ quantidade: 90 }),
+  montarJogoGol(document.querySelector('#jogo'), {
+    onGol: () => dispararConfete({ quantidade: 110 }),
   });
   ativarCursorBolas(['#proximo-jogo', '#craques']);
   ativarTooltipsTermos();
+  ativarReveals();
   dispararConfete();
 }
 
