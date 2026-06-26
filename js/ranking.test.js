@@ -33,6 +33,14 @@ test('ignora palpites de jogos ainda não encerrados', () => {
   assert.deepEqual(calcularRanking(palpites, resultados), []);
 });
 
+test('carrega a foto da conta no resultado', () => {
+  const palpites = [
+    { usuarioId: 5, apelido: 'Ana', foto: 'http://x/a.png', jogoId: 'J1', placarBrasil: 2, placarAdversario: 1 },
+  ];
+  const r = calcularRanking(palpites, resultados);
+  assert.equal(r[0].foto, 'http://x/a.png');
+});
+
 test('mantém o apelido mais recente do mesmo usuário', () => {
   const palpites = [
     { usuarioId: 'u1', apelido: 'Aninha', jogoId: 'J1', placarBrasil: 2, placarAdversario: 1 },

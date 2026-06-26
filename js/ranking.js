@@ -11,12 +11,14 @@ export function calcularRanking(palpites, resultados) {
     const atual = porUsuario.get(p.usuarioId) || {
       usuarioId: p.usuarioId,
       apelido: p.apelido,
+      foto: p.foto || null,
       pontos: 0,
       acertos: 0,
     };
     atual.pontos += pontos;
     if (pontos === 3) atual.acertos += 1;
     atual.apelido = p.apelido; // mantém o apelido mais recente
+    atual.foto = p.foto || null; // mantém a foto mais recente
     porUsuario.set(p.usuarioId, atual);
   }
 
