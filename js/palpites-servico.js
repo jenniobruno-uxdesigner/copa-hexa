@@ -17,8 +17,19 @@ function palpiteValido(b) {
   );
 }
 
+// O esquema é idempotente; garante uma vez por instância "quente" da função,
+// em vez de rodar o DDL a cada request.
+let esquemaPronto = false;
+
 export async function tratarRequisicao(req, res, { db, resultados }) {
-  await db.garantirEsquema();
+  if (req.method !== 'POST' && req.method !== 'GET') {
+    return res.status(405).json({ erro: 'método não suportado' });
+  }
+
+  if (!esquemaPronto) {
+    await db.garantirEsquema();
+    esquemaPronto = true;
+  }
 
   if (req.method === 'POST') {
     const b = req.body;
@@ -40,8 +51,8 @@ export async function tratarRequisicao(req, res, { db, resultados }) {
     return res.status(200).json({ ranking: calcularRanking(palpites, mapa) });
   }
 
-  const jogoId = req.query.jogoId;
-  if (!jogoId) {
+  const jogoId = Array.isArray(req.query.jogoId) ? req.query.jogoId[0] : req.query.jogoId;
+  if (typeof jogoId !== 'string' || jogoId.length === 0) {
     return res.status(400).json({ erro: 'jogoId é obrigatório' });
   }
   const palpites = await db.palpitesDoJogo(jogoId);

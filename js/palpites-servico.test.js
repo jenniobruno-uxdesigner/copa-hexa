@@ -50,6 +50,51 @@ test('POST com placar inválido é rejeitado (400)', async () => {
   assert.equal(res.statusCode, 400);
 });
 
+test('POST com corpo nulo ou sem campos é rejeitado (400)', async () => {
+  for (const body of [null, 'foo', {}, { jogoId: 'J1', usuarioId: 'u1', apelido: 'Ana' }]) {
+    const db = dbFake();
+    const res = resFake();
+    await tratarRequisicao({ method: 'POST', query: {}, body }, res, { db, resultados: semResultados });
+    assert.equal(res.statusCode, 400);
+    assert.equal(db.salvos.length, 0);
+  }
+});
+
+test('POST com placar não-inteiro (float/string/NaN) é rejeitado (400)', async () => {
+  for (const placarBrasil of [1.5, '2', NaN]) {
+    const db = dbFake();
+    const res = resFake();
+    const body = { jogoId: 'J1', usuarioId: 'u1', apelido: 'Ana', placarBrasil, placarAdversario: 0 };
+    await tratarRequisicao({ method: 'POST', query: {}, body }, res, { db, resultados: semResultados });
+    assert.equal(res.statusCode, 400);
+  }
+});
+
+test('POST apara espaços e corta o apelido em 40 caracteres ao salvar', async () => {
+  const db = dbFake();
+  const apelidoLongo = 'a'.repeat(50);
+  await tratarRequisicao(
+    { method: 'POST', query: {}, body: { jogoId: 'J1', usuarioId: 'u1', apelido: `  ${apelidoLongo}  `, placarBrasil: 1, placarAdversario: 0 } },
+    resFake(), { db, resultados: semResultados }
+  );
+  assert.equal(db.salvos[0].apelido.length, 40);
+});
+
+test('método não suportado responde 405', async () => {
+  const db = dbFake();
+  const res = resFake();
+  await tratarRequisicao({ method: 'DELETE', query: {}, body: null }, res, { db, resultados: semResultados });
+  assert.equal(res.statusCode, 405);
+});
+
+test('GET ?jogoId em array usa o primeiro valor (não quebra)', async () => {
+  const db = dbFake([{ jogoId: 'J1', usuarioId: 'u1', apelido: 'Ana', placarBrasil: 2, placarAdversario: 1 }]);
+  const res = resFake();
+  await tratarRequisicao({ method: 'GET', query: { jogoId: ['J1', 'J2'] }, body: null }, res, { db, resultados: semResultados });
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.total, 1);
+});
+
 test('GET ?jogoId devolve a vibe (distribuição)', async () => {
   const db = dbFake([
     { jogoId: 'J1', usuarioId: 'u1', apelido: 'Ana', placarBrasil: 2, placarAdversario: 1 },

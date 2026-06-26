@@ -33,6 +33,15 @@ test('ignora palpites de jogos ainda não encerrados', () => {
   assert.deepEqual(calcularRanking(palpites, resultados), []);
 });
 
+test('mantém o apelido mais recente do mesmo usuário', () => {
+  const palpites = [
+    { usuarioId: 'u1', apelido: 'Aninha', jogoId: 'J1', placarBrasil: 2, placarAdversario: 1 },
+    { usuarioId: 'u1', apelido: 'Ana Campeã', jogoId: 'J2', placarBrasil: 0, placarAdversario: 0 },
+  ];
+  const r = calcularRanking(palpites, resultados);
+  assert.equal(r[0].apelido, 'Ana Campeã');
+});
+
 test('desempata por mais acertos exatos', () => {
   const palpites = [
     { usuarioId: 'u1', apelido: 'Ana', jogoId: 'J1', placarBrasil: 2, placarAdversario: 1 },
