@@ -259,6 +259,32 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 0.92; m
 }
 
 /* ---------- Reduzir movimento ---------- */
+/* Barra de conta */
+.barra-conta { position: sticky; top: 0; z-index: 70; display: flex; justify-content: flex-end; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--noite); }
+.conta__entrar { background: var(--ouro); color: var(--tinta); border: 0; border-radius: 999px; padding: 0.5rem 1rem; font-family: var(--display); font-weight: 700; cursor: pointer; }
+.conta { display: flex; align-items: center; gap: 0.6rem; color: var(--creme); }
+.conta__avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--verde); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; overflow: hidden; }
+.conta__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.conta__nome { font-weight: 600; }
+.conta__sair { background: none; border: 0; color: var(--ouro); cursor: pointer; text-decoration: underline; font: inherit; }
+
+/* Modal de conta */
+.modal-conta { position: fixed; inset: 0; z-index: 100; background: rgba(8,22,13,0.7); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.modal-conta__caixa { background: var(--creme); color: var(--tinta); border-radius: var(--raio); padding: 1.5rem; max-width: 380px; width: 100%; position: relative; box-shadow: var(--sombra); }
+.modal-conta__caixa h3 { font-family: var(--display); text-transform: uppercase; font-size: 1.6rem; margin: 0 0 0.25rem; }
+.modal-conta__sub { font-size: 0.9rem; opacity: 0.8; margin: 0 0 1rem; }
+.modal-conta__fechar { position: absolute; top: 0.5rem; right: 0.75rem; background: none; border: 0; font-size: 1.5rem; cursor: pointer; line-height: 1; }
+.modal-conta__abas { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+.modal-conta__abas .aba { flex: 1; background: #fff; border: 2px solid var(--noite-2); border-radius: 10px; padding: 0.5rem; cursor: pointer; font-weight: 700; }
+.modal-conta__abas .aba.ativa { background: var(--verde); color: #fff; border-color: var(--verde); }
+#mc-form { display: grid; gap: 0.6rem; }
+#mc-form input { padding: 0.7rem; border: 2px solid var(--noite-2); border-radius: 10px; font-size: 1rem; }
+#mc-form button { background: var(--ouro); color: var(--tinta); border: 0; border-radius: 10px; padding: 0.75rem; font-family: var(--display); font-weight: 700; text-transform: uppercase; cursor: pointer; }
+.modal-conta__aviso { font-size: 0.8rem; opacity: 0.7; margin: 0.5rem 0; }
+.modal-conta__ou { text-align: center; opacity: 0.6; margin: 0.5rem 0; font-family: var(--mono); }
+#mc-google { display: flex; justify-content: center; min-height: 40px; }
+.modal-conta__erro { color: var(--coral); font-weight: 700; min-height: 1.2em; margin: 0.5rem 0 0; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; transform: none; }

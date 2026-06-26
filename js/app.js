@@ -4,6 +4,7 @@ import { ativarCursorBolas } from './cursor-bolas.js';
 import { montarJogoGol } from './jogo-gol.js';
 import { ativarTooltipsTermos } from './termos-inline.js';
 import { ativarReveals, ativarHeroBola } from './animacoes.js';
+import { montarBarraConta } from './conta-ui.js';
 
 async function carregarDados() {
   try {
@@ -50,6 +51,7 @@ async function atualizarPalpite(proximoJogo) {
 }
 
 async function init() {
+  montarBarraConta(document.querySelector('#barra-conta'), { aoMudar: () => location.reload() });
   const dados = await carregarDados();
   render.renderTermometro(document.querySelector('#termometro'), dados.estado);
   render.renderProximoJogo(document.querySelector('#proximo-jogo'), dados.proximoJogo, dados.estado);
