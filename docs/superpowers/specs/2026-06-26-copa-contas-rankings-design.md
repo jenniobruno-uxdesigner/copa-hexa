@@ -9,13 +9,14 @@ Permitir que as pessoas tenham uma identidade (username único) para competir
 nos rankings ("pódio") de palpites e do joguinho de pênalti. **Login é
 opcional**: anônimo continua palpitando e jogando; o login só destrava a
 disputa pelo pódio. Dois caminhos de login: **usuário + PIN** ou **Google**.
-Sem dados sensíveis (sem e-mail/perfil — só o necessário pra identificar).
+Do Google usamos **nome e foto** (para exibir no ranking) e o `sub` (identidade)
+— **nunca o e-mail** nem outros dados.
 
 ## Princípios
 
 - Login opcional. Nada que o anônimo faz hoje deixa de funcionar.
 - Mensagens-convite discretas ("Entre pra disputar o pódio 🏆") no palpite e no jogo.
-- Mínimo de dados: `username`, `pin_hash` (quando usa PIN), `google_sub` (quando usa Google).
+- Mínimo de dados: `nome` (exibição), `username`/`pin_hash` (método PIN), `google_sub` + `foto_url` (método Google). Nunca e-mail.
 - Lógica pura e testável; segredos só no servidor (Vercel env).
 
 ## Decisões
@@ -35,8 +36,11 @@ Sem dados sensíveis (sem e-mail/perfil — só o necessário pra identificar).
 ```sql
 CREATE TABLE IF NOT EXISTS usuarios (
   id          BIGSERIAL PRIMARY KEY,
-  username    TEXT NOT NULL,
-  username_lc TEXT NOT NULL UNIQUE,          -- username em minúsculas p/ unicidade
+  nome        TEXT NOT NULL,                 -- nome de exibição no ranking
+                                             --   PIN: = o username escolhido
+                                             --   Google: o nome vindo do Google
+  username_lc TEXT UNIQUE,                   -- handle único do método PIN (minúsculas); nulo p/ Google
+  foto_url    TEXT,                          -- avatar (foto do Google); nulo p/ PIN
   pin_hash    TEXT,                          -- "salt:hash" (scrypt); nulo se só Google
   google_sub  TEXT UNIQUE,                   -- id do Google; nulo se só PIN
   criado_em   TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -65,22 +69,22 @@ ALTER TABLE palpites ADD COLUMN IF NOT EXISTS conta_id BIGINT REFERENCES usuario
 ## API (serverless)
 
 ### `api/auth.js`
-- `POST {acao:'registrar', username, pin}` → valida, cria conta (pin_hash), devolve `{ token, username }`.
-- `POST {acao:'entrar', username, pin}` → confere o PIN, devolve `{ token, username }`.
-- `POST {acao:'google', idToken, username?}` → valida o ID token (`GOOGLE_CLIENT_ID`), pega o `sub`.
-  - Se já existe conta com esse `sub` → devolve `{ token, username }`.
-  - Se não existe e veio `username` único → cria e devolve token.
-  - Se não existe e não veio username → `{ precisaUsername: true }` (front pede um).
-- Erros claros: username em uso, PIN errado, etc. (sem vazar qual dos dois falhou em login? para festivo, mensagens simples bastam).
+- `POST {acao:'registrar', username, pin}` → valida, cria conta (`nome = username`, `username_lc`, `pin_hash`), devolve `{ token, perfil }`.
+- `POST {acao:'entrar', username, pin}` → confere o PIN, devolve `{ token, perfil }`.
+- `POST {acao:'google', idToken}` → valida o ID token (`GOOGLE_CLIENT_ID`) e extrai do próprio token: `sub`, `name`, `picture` (**não** lê e-mail).
+  - Conta existente com esse `sub` → atualiza nome/foto (caso tenham mudado) e devolve `{ token, perfil }`.
+  - Conta nova → cria com `nome = name`, `foto_url = picture`, `google_sub = sub` e devolve token. **Não precisa escolher username** (o nome do Google já é a exibição).
+- Resposta de login devolve `perfil = { id, nome, foto }` para o front mostrar.
+- Erros claros: username em uso (PIN), PIN errado, etc. — mensagens simples.
 
 ### `api/palpites.js` (atualiza)
 - `POST` aceita `Authorization: Bearer <token>` opcional. Logado → grava `conta_id` + `apelido = username`. Anônimo → `conta_id` nulo (continua contando na vibe).
-- `GET ?ranking` → agrega **só** palpites com `conta_id` não nulo, por conta, com o `username`.
+- `GET ?ranking` → agrega **só** palpites com `conta_id` não nulo, por conta, com `nome` e `foto_url`.
 - `GET ?jogoId` (vibe) → inalterado (distribuição de todos os palpites).
 
 ### `api/placar-jogo.js` (novo)
 - `POST` (exige sessão) `{ golsNaPartida, sequenciaNaPartida }` → upsert: `gols += golsNaPartida`, `melhor_sequencia = max(atual, sequenciaNaPartida)`.
-- `GET ?ranking` → top contas por gols (desempate melhor_sequencia), com username.
+- `GET ?ranking` → top contas por gols (desempate melhor_sequencia), com `nome` e `foto_url`.
 
 ### Sessão
 Token JWT no `localStorage` (`copaSessao`), enviado como `Bearer` nas ações que
@@ -88,10 +92,11 @@ identificam a conta. `verificarSessao` no servidor decide quem é a conta.
 
 ## Front-end
 
-- **Barra de identidade** (topo): anônimo → "Entrar pra disputar o pódio 🏆"; logado → "Olá, <username> · sair".
-- **Modal de login**: abas "Usuário + PIN" (entrar/criar) e botão "Entrar com Google" (Google Identity Services). No 1º Google sem conta, pede um username único.
-- **Palpite**: logado usa o username (some o campo apelido); anônimo mantém o apelido + convite discreto. Mostra o **ranking de palpites** (pódio).
-- **Jogo**: rastreia gols e sequência da sessão; logado envia o resultado; mostra o **ranking do jogo**. Convite discreto pra anônimo.
+- **Barra de identidade** (topo): anônimo → "Entrar pra disputar o pódio 🏆"; logado → avatar (foto ou inicial) + "Olá, <nome> · sair".
+- **Modal de login**: abas "Usuário + PIN" (entrar/criar) e botão "Entrar com Google" (Google Identity Services). Google não pede username (usa o nome do Google).
+- **Palpite**: logado usa o nome da conta (some o campo apelido); anônimo mantém o apelido + convite discreto. Mostra o **ranking de palpites** (pódio) com nome + avatar.
+- **Jogo**: rastreia gols e sequência da sessão; logado envia o resultado; mostra o **ranking do jogo** com nome + avatar. Convite discreto pra anônimo.
+- **Avatar**: usa `foto_url` quando existe; senão, um círculo com a inicial do nome (fallback também se a foto do Google falhar ao carregar).
 - Google Identity Services carregado por `<script>`; usa o `GOOGLE_CLIENT_ID`.
 
 ## Rastreio de sequência no jogo
@@ -121,7 +126,7 @@ e a informar no callback: `onGol({ sequencia })`. O app, se logado, envia
 ## Fora do escopo (v2)
 
 - Recuperação de PIN esquecido (sem e-mail, não dá — avisar que o PIN não tem recuperação).
-- Foto/nome do Google, e-mail, ou qualquer dado de perfil.
+- E-mail do Google ou qualquer dado além de nome + foto + `sub`.
 - Migrar palpites anônimos antigos para contas.
 - Vínculo de uma mesma conta a PIN **e** Google ao mesmo tempo (cada conta usa um método; dá pra evoluir depois).
 
