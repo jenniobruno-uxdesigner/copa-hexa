@@ -8,6 +8,7 @@
     "dev": "npx --yes serve -l 3000"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0"
+    "@neondatabase/serverless": "^1.1.0",
+    "@vercel/analytics": "^2.0.1"
   }
 }
