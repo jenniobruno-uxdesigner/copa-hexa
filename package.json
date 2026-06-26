@@ -8,6 +8,7 @@
     "dev": "npx --yes serve -l 3000"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0"
+    "@neondatabase/serverless": "^1.1.0",
+    "google-auth-library": "^10.9.0"
   }
 }
