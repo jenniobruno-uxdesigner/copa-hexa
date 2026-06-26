@@ -50,3 +50,49 @@ test('todosPalpites mapeia todas as linhas', async () => {
   assert.equal(linhas.length, 2);
   assert.equal(linhas[1].apelido, 'Beto');
 });
+
+function consultaU(linhasPorChamada = []) {
+  const chamadas = [];
+  let i = 0;
+  const fn = async (texto, params) => {
+    chamadas.push({ texto, params });
+    return linhasPorChamada[i++] ?? [];
+  };
+  fn.chamadas = chamadas;
+  return fn;
+}
+
+test('garantirEsquemaUsuarios cria a tabela usuarios', async () => {
+  const c = consultaU();
+  await criarDb(c).garantirEsquemaUsuarios();
+  assert.match(c.chamadas[0].texto, /CREATE TABLE IF NOT EXISTS usuarios/);
+});
+
+test('criarUsuarioPin insere e mapeia o perfil', async () => {
+  const c = consultaU([[{ id: 1, nome: 'Ana', foto_url: null }]]);
+  const u = await criarDb(c).criarUsuarioPin({ nome: 'Ana', usernameLc: 'ana', pinHash: 'sal:hash' });
+  assert.match(c.chamadas[0].texto, /INSERT INTO usuarios/);
+  assert.deepEqual(c.chamadas[0].params, ['Ana', 'ana', 'sal:hash']);
+  assert.deepEqual(u, { id: 1, nome: 'Ana', foto: null });
+});
+
+test('buscarPorUsername devolve perfil + pinHash', async () => {
+  const c = consultaU([[{ id: 1, nome: 'Ana', foto_url: null, pin_hash: 'sal:hash' }]]);
+  const u = await criarDb(c).buscarPorUsername('ana');
+  assert.deepEqual(c.chamadas[0].params, ['ana']);
+  assert.equal(u.pinHash, 'sal:hash');
+  assert.equal(u.nome, 'Ana');
+});
+
+test('buscarPorUsername devolve null quando não acha', async () => {
+  const c = consultaU([[]]);
+  assert.equal(await criarDb(c).buscarPorUsername('ninguem'), null);
+});
+
+test('acharOuCriarGoogle faz upsert por google_sub', async () => {
+  const c = consultaU([[{ id: 2, nome: 'João', foto_url: 'http://x/p.png' }]]);
+  const u = await criarDb(c).acharOuCriarGoogle({ googleSub: 'g-123', nome: 'João', fotoUrl: 'http://x/p.png' });
+  assert.match(c.chamadas[0].texto, /ON CONFLICT \(google_sub\)/);
+  assert.deepEqual(c.chamadas[0].params, ['João', 'http://x/p.png', 'g-123']);
+  assert.deepEqual(u, { id: 2, nome: 'João', foto: 'http://x/p.png' });
+});
