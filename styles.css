@@ -102,6 +102,21 @@ h2 { font-size: 1.5rem; margin-bottom: 0.75rem; }
   .glossario { grid-template-columns: 1fr 1fr; }
 }
 
+/* Palpite */
+.palpite__form { display: grid; gap: 0.75rem; max-width: 420px; }
+.palpite__apelido { padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 1rem; }
+.palpite__placar { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+.palpite__placar select { padding: 0.4rem; border-radius: 8px; }
+.palpite__form button { background: var(--verde); color: var(--branco); border: 0; border-radius: 10px; padding: 0.7rem 1rem; font-weight: 700; cursor: pointer; }
+.palpite__status { font-weight: 600; min-height: 1.2em; }
+.vibe { list-style: none; padding: 0; display: grid; gap: 0.4rem; }
+.vibe li { display: grid; grid-template-columns: 1fr 2fr auto; align-items: center; gap: 0.5rem; }
+.vibe__barra { background: #e5e7eb; border-radius: 999px; overflow: hidden; height: 10px; }
+.vibe__barra span { display: block; height: 100%; background: var(--amarelo); }
+.ranking { padding-left: 1.2rem; display: grid; gap: 0.3rem; }
+.ranking li { display: flex; gap: 0.5rem; }
+.rank__pts { margin-left: auto; font-weight: 700; color: var(--verde); }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }

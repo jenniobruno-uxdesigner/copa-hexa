@@ -87,3 +87,66 @@ export function renderGlossario(el) {
     <div class="glossario">${cards}</div>
   `;
 }
+
+export function renderPalpite(el, proximoJogo, { onEnviar }) {
+  if (!proximoJogo) {
+    el.innerHTML = '<h2>Dar seu palpite</h2><p>Sem jogo aberto pra palpite agora. Volta na véspera do próximo jogo! 😉</p>';
+    return;
+  }
+  const opcoes = (sel) =>
+    Array.from({ length: 6 }, (_, n) => `<option value="${n}"${n === sel ? ' selected' : ''}>${n}</option>`).join('');
+
+  el.innerHTML = `
+    <h2>Dar seu palpite 🔮</h2>
+    <p class="palpite__jogo">Brasil x ${proximoJogo.adversario}</p>
+    <form class="palpite__form" id="palpite-form">
+      <input class="palpite__apelido" id="palpite-apelido" type="text" maxlength="40" placeholder="Seu apelido" required />
+      <div class="palpite__placar">
+        <label>Brasil <select id="palpite-br">${opcoes(1)}</select></label>
+        <span>x</span>
+        <label><select id="palpite-adv">${opcoes(0)}</select> ${proximoJogo.adversario}</label>
+      </div>
+      <button type="submit">Enviar palpite</button>
+    </form>
+    <p class="palpite__status" id="palpite-status" aria-live="polite"></p>
+    <div class="palpite__vibe" id="palpite-vibe"></div>
+    <div class="palpite__ranking" id="palpite-ranking"></div>
+  `;
+
+  el.querySelector('#palpite-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    onEnviar({
+      apelido: el.querySelector('#palpite-apelido').value,
+      placarBrasil: Number(el.querySelector('#palpite-br').value),
+      placarAdversario: Number(el.querySelector('#palpite-adv').value),
+    });
+  });
+}
+
+export function renderVibe(el, vibe, adversario) {
+  if (!vibe || vibe.total === 0) {
+    el.innerHTML = '<p class="vibe__vazio">Seja o primeiro a palpitar! 🎉</p>';
+    return;
+  }
+  const linhas = vibe.placares
+    .slice(0, 5)
+    .map(
+      (p) => `<li><span class="vibe__rotulo">Brasil ${p.rotulo.replace('x', `x ${adversario} `)}</span>
+        <span class="vibe__barra"><span style="width:${p.percentual}%"></span></span>
+        <span class="vibe__pct">${p.percentual}%</span></li>`
+    )
+    .join('');
+  el.innerHTML = `<h3>A vibe da galera (${vibe.total})</h3><ul class="vibe">${linhas}</ul>`;
+}
+
+export function renderRanking(el, ranking) {
+  if (!ranking || ranking.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  const itens = ranking
+    .slice(0, 10)
+    .map((r, i) => `<li><span class="rank__pos">${i + 1}º</span> <span class="rank__nome">${r.apelido}</span> <span class="rank__pts">${r.pontos} pts</span></li>`)
+    .join('');
+  el.innerHTML = `<h3>🏅 Ranking dos palpiteiros</h3><ol class="ranking">${itens}</ol>`;
+}
