@@ -24,6 +24,21 @@ normaliza para o contrato interno. Em qualquer falha, devolve
 - `API_KEY` — token da football-data.org (header `X-Auth-Token`).
 - `DATABASE_URL` — string de conexão do Neon (usada no Plano 3, palpites).
 
+## Palpites e ranking (Neon)
+
+Os palpites ficam no Neon (Postgres serverless). A função `api/palpites.js`
+cria a tabela `palpites` automaticamente na primeira chamada
+(`CREATE TABLE IF NOT EXISTS`). Endpoints:
+
+- `POST /api/palpites` — body `{ jogoId, usuarioId, apelido, placarBrasil, placarAdversario }`
+- `GET /api/palpites?jogoId=...` — a "vibe" (distribuição) do jogo
+- `GET /api/palpites?ranking` — o ranking acumulado
+
+Pontuação: placar exato = 3, só o vencedor/empate = 1, erro = 0.
+
+Defina `DATABASE_URL` (string de conexão do Neon) nas variáveis de ambiente da
+Vercel. O ranking usa também `API_KEY` para pegar os resultados finais.
+
 ## Deploy
 
 Deploy na Vercel (conta Hobby). Os commits precisam ter como autor
