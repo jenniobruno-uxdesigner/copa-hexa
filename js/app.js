@@ -3,7 +3,7 @@ import { dispararConfete } from './confete.js';
 import { ativarCursorBolas } from './cursor-bolas.js';
 import { montarJogoGol } from './jogo-gol.js';
 import { ativarTooltipsTermos } from './termos-inline.js';
-import { ativarReveals } from './animacoes.js';
+import { ativarReveals, ativarHeroBola } from './animacoes.js';
 
 async function carregarDados() {
   try {
@@ -52,7 +52,7 @@ async function atualizarPalpite(proximoJogo) {
 async function init() {
   const dados = await carregarDados();
   render.renderTermometro(document.querySelector('#termometro'), dados.estado);
-  render.renderProximoJogo(document.querySelector('#proximo-jogo'), dados.proximoJogo);
+  render.renderProximoJogo(document.querySelector('#proximo-jogo'), dados.proximoJogo, dados.estado);
   render.renderGrupo(document.querySelector('#grupo'), dados.grupo);
   render.renderCraques(document.querySelector('#craques'), dados.artilheiros);
   render.renderGlossario(document.querySelector('#glossario'));
@@ -84,7 +84,7 @@ async function init() {
       }
       atualizarPalpite(proximoJogo);
     },
-  });
+  }, dados.estado);
 
   atualizarPalpite(proximoJogo);
 
@@ -99,6 +99,7 @@ async function init() {
   ativarCursorBolas(['#proximo-jogo', '#craques']);
   ativarTooltipsTermos();
   ativarReveals();
+  ativarHeroBola();
   dispararConfete();
 }
 

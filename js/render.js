@@ -5,6 +5,21 @@ import { linkWhatsApp } from './compartilhar.js';
 
 const NIVEIS = ['eliminado', 'alerta', 'no-caminho', 'muito-bem', 'hexa'];
 
+const BANDEIRA =
+  '<svg class="bandeira" viewBox="0 0 28 20" role="img" aria-label="Brasil"><rect width="28" height="20" rx="2" fill="#009c3b"/><path d="M14 2.5 25.5 10 14 17.5 2.5 10Z" fill="#ffdf00"/><circle cx="14" cy="10" r="4" fill="#002776"/></svg>';
+
+// Conteúdo para quando não há próximo jogo, conforme a situação do Brasil.
+function semJogo(estado) {
+  const s = estado && estado.situacao;
+  if (s === 'campeao') {
+    return { titulo: 'É HEXA! 🏆', texto: 'Não tem próximo jogo: o Brasil é campeão do mundo! Pode comemorar pra sempre.' };
+  }
+  if (s === 'eliminado') {
+    return { titulo: 'A Copa acabou pra gente 😢', texto: 'O Brasil foi eliminado desta vez. Valeu por torcer junto — bora pra próxima!' };
+  }
+  return { titulo: 'Jogo ainda não marcado', texto: 'Os próximos jogos do Brasil ainda não foram definidos. Volta logo que a gente atualiza! ⚽' };
+}
+
 export function renderTermometro(el, estado) {
   const s = statusHexa(estado);
   const ativos = NIVEIS.indexOf(s.nivel) + 1;
@@ -23,13 +38,14 @@ export function renderTermometro(el, estado) {
   `;
 }
 
-export function renderProximoJogo(el, proximoJogo) {
+export function renderProximoJogo(el, proximoJogo, estado) {
   if (!proximoJogo) {
+    const m = semJogo(estado);
     el.innerHTML = `
       <div class="bloco">
         <p class="eyebrow">Próximo jogo</p>
-        <h2 class="titulo-secao">Sem jogo marcado agora</h2>
-        <p>Volta na véspera do próximo jogo do Brasil. 😉</p>
+        <h2 class="titulo-secao">${m.titulo}</h2>
+        <p>${m.texto}</p>
       </div>`;
     return;
   }
@@ -49,7 +65,7 @@ export function renderProximoJogo(el, proximoJogo) {
           <span><b>Fase</b>${marcarTermos(proximoJogo.fase)}</span>
         </div>
       </div>
-      <div class="ticket__oque">⚽ Marque no calendário e chame a galera pra torcer junto. 🇧🇷</div>
+      <div class="ticket__oque">⚽ Marque no calendário e chame a galera pra torcer junto. ${BANDEIRA}</div>
     </div>
   `;
 }
@@ -105,13 +121,14 @@ export function renderCraques(el, artilheiros) {
   `;
 }
 
-export function renderPalpite(el, proximoJogo, { onEnviar }) {
+export function renderPalpite(el, proximoJogo, { onEnviar }, estado) {
   if (!proximoJogo) {
+    const m = semJogo(estado);
     el.innerHTML = `
       <div class="bloco">
         <p class="eyebrow eyebrow--claro">Dar seu palpite</p>
-        <h2 class="titulo-secao">Sem jogo aberto pra palpite</h2>
-        <p>Volta na véspera do próximo jogo! 😉</p>
+        <h2 class="titulo-secao">${m.titulo}</h2>
+        <p>${m.texto}</p>
       </div>`;
     return;
   }
@@ -200,7 +217,7 @@ export function renderCompartilhar(el, { url, texto }) {
   el.innerHTML = `
     <div class="bloco">
       <p class="eyebrow eyebrow--claro">Chama a galera</p>
-      <h2 class="titulo-secao">Aqui é Brasil 🇧🇷</h2>
+      <h2 class="titulo-secao">Aqui é Brasil ${BANDEIRA}</h2>
       <p>Manda esse site pra quem também finge que entende de futebol.</p>
       <div class="compartilhar__botoes">
         <a class="botao-wpp" href="${linkWhatsApp(texto, url)}" target="_blank" rel="noopener">Compartilhar no WhatsApp</a>

@@ -98,10 +98,13 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 0.92; m
 
 .hero__bola {
   position: absolute; right: 6vw; bottom: 8vh; font-size: clamp(3rem, 9vw, 7rem);
-  z-index: 3; cursor: grab; user-select: none; will-change: transform;
-  animation: flutuaBola 4s ease-in-out infinite;
+  z-index: 3; cursor: grab; user-select: none; will-change: transform; touch-action: none;
 }
+.hero__bola.bobinha { animation: flutuaBola 4s ease-in-out infinite; }
 @keyframes flutuaBola { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-18px) rotate(20deg); } }
+
+/* Bandeira do Brasil (SVG — emoji 🇧🇷 não renderiza em alguns sistemas) */
+.bandeira { display: inline-block; width: 1.2em; height: 0.86em; vertical-align: -0.12em; margin-left: 0.12em; }
 
 /* ---------- Marquee ---------- */
 .marquee {
