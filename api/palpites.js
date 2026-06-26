@@ -1,6 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import { criarDb } from '../js/db.js';
 import { montarResultados } from '../js/normalizar.js';
+import { sessaoDaRequisicao } from '../js/sessao.js';
 import { tratarRequisicao } from '../js/palpites-servico.js';
 
 const BASE = 'https://api.football-data.org/v4';
@@ -28,7 +29,8 @@ async function resultadosFinais() {
 export default async function handler(req, res) {
   try {
     const db = criarDb(consultaNeon());
-    await tratarRequisicao(req, res, { db, resultados: resultadosFinais });
+    const usuarioDaSessao = (r) => sessaoDaRequisicao(r, process.env.SESSION_SECRET);
+    await tratarRequisicao(req, res, { db, resultados: resultadosFinais, usuarioDaSessao });
   } catch (erro) {
     res.status(500).json({ ok: false, erro: 'falha no servidor de palpites' });
   }

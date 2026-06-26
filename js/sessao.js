@@ -35,3 +35,10 @@ export function verificarSessao(token, segredo) {
   if (corpo.exp && Math.floor(Date.now() / 1000) > corpo.exp) return null;
   return corpo;
 }
+
+// Extrai a sessão do header Authorization: Bearer <token>.
+export function sessaoDaRequisicao(req, segredo) {
+  const cab = req && req.headers && (req.headers.authorization || req.headers.Authorization);
+  if (typeof cab !== 'string' || !cab.startsWith('Bearer ')) return null;
+  return verificarSessao(cab.slice(7), segredo);
+}

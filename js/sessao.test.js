@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { assinarSessao, verificarSessao } from './sessao.js';
+import { assinarSessao, verificarSessao, sessaoDaRequisicao } from './sessao.js';
 
 const SEGREDO = 'segredo-de-teste';
 
@@ -30,4 +30,16 @@ test('token expirado rejeita', () => {
 test('lixo devolve null', () => {
   assert.equal(verificarSessao('abc', SEGREDO), null);
   assert.equal(verificarSessao(null, SEGREDO), null);
+});
+
+test('sessaoDaRequisicao lê o Bearer válido', () => {
+  const token = assinarSessao({ id: 9, nome: 'Zé' }, SEGREDO);
+  const req = { headers: { authorization: `Bearer ${token}` } };
+  assert.equal(sessaoDaRequisicao(req, SEGREDO).id, 9);
+});
+
+test('sessaoDaRequisicao sem header ou sem Bearer devolve null', () => {
+  assert.equal(sessaoDaRequisicao({ headers: {} }, SEGREDO), null);
+  assert.equal(sessaoDaRequisicao({ headers: { authorization: 'xyz' } }, SEGREDO), null);
+  assert.equal(sessaoDaRequisicao({}, SEGREDO), null);
 });
