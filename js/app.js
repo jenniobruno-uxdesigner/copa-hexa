@@ -1,4 +1,8 @@
 import * as render from './render.js';
+import { dispararConfete } from './confete.js';
+import { ativarCursorBolas } from './cursor-bolas.js';
+import { montarJoguinho } from './joguinho.js';
+import { ativarTooltipsTermos } from './termos-inline.js';
 
 async function carregarDados() {
   try {
@@ -82,6 +86,18 @@ async function init() {
   });
 
   atualizarPalpite(proximoJogo);
+
+  // Camada festiva
+  render.renderCompartilhar(document.querySelector('#compartilhar'), {
+    url: location.href,
+    texto: 'Temos chance ao hexa? Entenda a Copa sem saber nada de futebol:',
+  });
+  montarJoguinho(document.querySelector('#joguinho'), {
+    onGol: () => dispararConfete({ quantidade: 90 }),
+  });
+  ativarCursorBolas(['#proximo-jogo', '#craques']);
+  ativarTooltipsTermos();
+  dispararConfete();
 }
 
 init();

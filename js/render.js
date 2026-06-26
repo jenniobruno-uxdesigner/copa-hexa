@@ -1,5 +1,7 @@
 import { statusHexa } from './termometro.js';
 import { todos } from './glossario.js';
+import { marcarTermos } from './termos-inline.js';
+import { linkWhatsApp } from './compartilhar.js';
 
 export function renderTermometro(el, estado) {
   const s = statusHexa(estado);
@@ -7,7 +9,7 @@ export function renderTermometro(el, estado) {
   el.innerHTML = `
     <div class="termometro__emoji">${s.emoji}</div>
     <h2 class="termometro__titulo">${s.titulo}</h2>
-    <p class="termometro__detalhe">${s.oQuePrecisa}</p>
+    <p class="termometro__detalhe">${marcarTermos(s.oQuePrecisa)}</p>
   `;
 }
 
@@ -24,7 +26,7 @@ export function renderProximoJogo(el, proximoJogo) {
     <h2>Próximo jogo ⚽</h2>
     <p class="proximo__adversario">Brasil <span>x</span> ${proximoJogo.adversario}</p>
     <p class="proximo__quando">${quando}</p>
-    <p class="proximo__fase">${proximoJogo.fase}</p>
+    <p class="proximo__fase">${marcarTermos(proximoJogo.fase)}</p>
   `;
 }
 
@@ -83,9 +85,31 @@ export function renderGlossario(el) {
     .join('');
   el.innerHTML = `
     <h2>Cola da Copa 🥅</h2>
+    <div class="joguinho" id="joguinho"></div>
     <p class="glossario__legenda">As regras do futebol explicadas pra quem tem 6 anos (ou age como se tivesse).</p>
     <div class="glossario">${cards}</div>
   `;
+}
+
+export function renderCompartilhar(el, { url, texto }) {
+  el.innerHTML = `
+    <h2>Chama a galera 🇧🇷</h2>
+    <p>Manda esse site pra quem também finge que entende de futebol.</p>
+    <div class="compartilhar__botoes">
+      <a class="botao-wpp" href="${linkWhatsApp(texto, url)}" target="_blank" rel="noopener">Compartilhar no WhatsApp</a>
+      <button type="button" class="botao-copiar" id="copiar-link">Copiar link</button>
+    </div>
+    <p class="compartilhar__status" id="copiar-status" aria-live="polite"></p>
+  `;
+  el.querySelector('#copiar-link').addEventListener('click', async () => {
+    const status = el.querySelector('#copiar-status');
+    try {
+      await navigator.clipboard.writeText(url);
+      status.textContent = 'Link copiado! 📋';
+    } catch {
+      status.textContent = url;
+    }
+  });
 }
 
 export function renderPalpite(el, proximoJogo, { onEnviar }) {
