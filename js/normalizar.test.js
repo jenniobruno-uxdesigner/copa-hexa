@@ -19,6 +19,15 @@ test('traduz a fase com e sem grupo', () => {
   assert.equal(traduzFase('LAST_16', null), 'Oitavas de final');
 });
 
+test('traduz a rodada de 32 (LAST_32) de forma amigável', () => {
+  assert.equal(traduzFase('LAST_32', null), 'Mata-mata (rodada de 32)');
+});
+
+test('traduz seleções como Japão e Coreia do Sul', () => {
+  assert.equal(traduzTime('Japan'), 'Japão');
+  assert.equal(traduzTime('South Korea'), 'Coreia do Sul');
+});
+
 test('próximo jogo do Brasil é o pendente mais próximo, traduzido', () => {
   const raw = {
     matches: [
