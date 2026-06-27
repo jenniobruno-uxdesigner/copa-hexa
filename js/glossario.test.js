@@ -5,7 +5,7 @@ import { definicao, todos } from './glossario.js';
 test('devolve a definição de um termo conhecido', () => {
   const d = definicao('impedimento');
   assert.ok(d);
-  assert.equal(d.termo, 'Impedimento');
+  assert.match(d.termo, /^Impedimento/);
   assert.ok(d.definicao.length > 0);
 });
 

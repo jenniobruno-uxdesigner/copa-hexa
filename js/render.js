@@ -131,13 +131,15 @@ export function renderPalpite(el, proximoJogo, { onEnviar }, estado, perfil) {
     return;
   }
   const opcoes = (sel) =>
-    Array.from({ length: 6 }, (_, n) => `<option value="${n}"${n === sel ? ' selected' : ''}>${n}</option>`).join('');
+    Array.from({ length: 11 }, (_, n) => `<option value="${n}"${n === sel ? ' selected' : ''}>${n}</option>`).join('');
 
   const identidade = perfil
     ? `<p class="palpite__como">Palpitando como <strong>${esc(perfil.nome)}</strong></p>`
     : `<input class="palpite__apelido" id="palpite-apelido" type="text" maxlength="40" placeholder="Seu apelido" required />
-       <p class="palpite__convite">Anônimo entra na vibe. Quer aparecer no <strong>pódio</strong>?</p>
-       <button type="button" class="botao-podio" id="palpite-login">Entrar pra disputar o pódio 🏆</button>`;
+       <div class="palpite__login-convite">
+         <p class="palpite__convite">Anônimo entra na vibe. Quer aparecer no <strong>pódio</strong>?</p>
+         <button type="button" class="conta__entrar" id="palpite-login">Entrar</button>
+       </div>`;
 
   el.innerHTML = `
     <div class="bloco">
