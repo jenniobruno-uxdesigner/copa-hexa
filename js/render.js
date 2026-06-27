@@ -20,6 +20,27 @@ function semJogo(estado) {
   return { titulo: 'Jogo ainda não marcado', texto: 'Os próximos jogos do Brasil ainda não foram definidos. Volta logo que a gente atualiza! ⚽' };
 }
 
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
+  );
+}
+
+function avatarHtml(nome, foto) {
+  const letra = esc((nome || '?').trim().charAt(0).toUpperCase() || '?');
+  const interno = foto ? `<img src="${esc(foto)}" alt="" />` : letra;
+  return `<span class="rank__avatar" data-letra="${letra}">${interno}</span>`;
+}
+
+function ligarFallbackAvatar(el) {
+  el.querySelectorAll('.rank__avatar img').forEach((img) => {
+    img.addEventListener('error', () => {
+      const span = img.parentElement;
+      span.textContent = span.dataset.letra;
+    });
+  });
+}
+
 export function renderTermometro(el, estado) {
   const s = statusHexa(estado);
   const ativos = NIVEIS.indexOf(s.nivel) + 1;
@@ -121,7 +142,7 @@ export function renderCraques(el, artilheiros) {
   `;
 }
 
-export function renderPalpite(el, proximoJogo, { onEnviar }, estado) {
+export function renderPalpite(el, proximoJogo, { onEnviar }, estado, perfil) {
   if (!proximoJogo) {
     const m = semJogo(estado);
     el.innerHTML = `
@@ -135,17 +156,22 @@ export function renderPalpite(el, proximoJogo, { onEnviar }, estado) {
   const opcoes = (sel) =>
     Array.from({ length: 6 }, (_, n) => `<option value="${n}"${n === sel ? ' selected' : ''}>${n}</option>`).join('');
 
+  const identidade = perfil
+    ? `<p class="palpite__como">Palpitando como <strong>${esc(perfil.nome)}</strong></p>`
+    : `<input class="palpite__apelido" id="palpite-apelido" type="text" maxlength="40" placeholder="Seu apelido" required />
+       <p class="palpite__convite">Anônimo entra na vibe. Quer aparecer no <strong>pódio</strong>? Entre lá no topo 🏆</p>`;
+
   el.innerHTML = `
     <div class="bloco">
       <p class="eyebrow eyebrow--claro">Agora que você entende</p>
       <h2 class="titulo-secao">Dá seu palpite 🔮</h2>
-      <p class="palpite__jogo">Brasil × ${proximoJogo.adversario}</p>
+      <p class="palpite__jogo">Brasil × ${esc(proximoJogo.adversario)}</p>
       <form class="palpite__form" id="palpite-form">
-        <input class="palpite__apelido" id="palpite-apelido" type="text" maxlength="40" placeholder="Seu apelido" required />
+        ${identidade}
         <div class="palpite__placar">
           <label>Brasil <select id="palpite-br">${opcoes(1)}</select></label>
           <span>×</span>
-          <label><select id="palpite-adv">${opcoes(0)}</select> ${proximoJogo.adversario}</label>
+          <label><select id="palpite-adv">${opcoes(0)}</select> ${esc(proximoJogo.adversario)}</label>
         </div>
         <button type="submit">Enviar palpite</button>
       </form>
@@ -157,8 +183,9 @@ export function renderPalpite(el, proximoJogo, { onEnviar }, estado) {
 
   el.querySelector('#palpite-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    const campoApelido = el.querySelector('#palpite-apelido');
     onEnviar({
-      apelido: el.querySelector('#palpite-apelido').value,
+      apelido: campoApelido ? campoApelido.value : null,
       placarBrasil: Number(el.querySelector('#palpite-br').value),
       placarAdversario: Number(el.querySelector('#palpite-adv').value),
     });
@@ -188,9 +215,29 @@ export function renderRanking(el, ranking) {
   }
   const itens = ranking
     .slice(0, 10)
-    .map((r, i) => `<li><span class="rank__pos">${i + 1}º</span> <span class="rank__nome">${r.apelido}</span> <span class="rank__pts">${r.pontos} pts</span></li>`)
+    .map(
+      (r, i) =>
+        `<li><span class="rank__pos">${i + 1}º</span> ${avatarHtml(r.apelido, r.foto)} <span class="rank__nome">${esc(r.apelido)}</span> <span class="rank__pts">${r.pontos} pts</span></li>`
+    )
     .join('');
   el.innerHTML = `<h3>🏅 Ranking dos palpiteiros</h3><ol class="ranking">${itens}</ol>`;
+  ligarFallbackAvatar(el);
+}
+
+export function renderRankingJogo(el, ranking) {
+  if (!ranking || ranking.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  const itens = ranking
+    .slice(0, 10)
+    .map(
+      (r, i) =>
+        `<li><span class="rank__pos">${i + 1}º</span> ${avatarHtml(r.nome, r.foto)} <span class="rank__nome">${esc(r.nome)}</span> <span class="rank__pts">${r.gols} gols · seq ${r.melhorSequencia}</span></li>`
+    )
+    .join('');
+  el.innerHTML = `<h3>🏅 Pódio do pênalti</h3><ol class="ranking">${itens}</ol>`;
+  ligarFallbackAvatar(el);
 }
 
 export function renderGlossario(el) {

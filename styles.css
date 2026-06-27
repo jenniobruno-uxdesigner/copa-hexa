@@ -80,7 +80,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 0.92; m
 .hero { min-height: 92vh; display: flex; align-items: center; }
 .hero__conteudo { max-width: 1000px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
 .hero__titulo {
-  font-size: clamp(3.5rem, 17vw, 11rem);
+  font-size: clamp(3.5rem, 12vw, 8.5rem);
   text-transform: uppercase; letter-spacing: -0.02em; margin: 0.5rem 0 1rem;
 }
 .hero__titulo .linha { display: block; }
@@ -284,6 +284,24 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 0.92; m
 .modal-conta__ou { text-align: center; opacity: 0.6; margin: 0.5rem 0; font-family: var(--mono); }
 #mc-google { display: flex; justify-content: center; min-height: 40px; }
 .modal-conta__erro { color: var(--coral); font-weight: 700; min-height: 1.2em; margin: 0.5rem 0 0; }
+
+/* Avatar nos rankings */
+.rank__avatar {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--verde); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700;
+  font-size: 0.8rem; overflow: hidden; flex: 0 0 auto;
+}
+.rank__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ranking li { align-items: center; }
+
+/* Palpite logado / convite */
+.palpite__como { font-weight: 600; }
+.palpite__como strong { color: var(--ouro); }
+.palpite__convite { font-size: 0.9rem; opacity: 0.85; margin: 0; }
+
+/* Ranking do jogo */
+.jogo__ranking { width: 100%; max-width: 480px; margin: 1rem auto 0; }
+.jogo__ranking .ranking li { background: rgba(255, 255, 255, 0.12); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

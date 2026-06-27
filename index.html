@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Temos chance ao hexa? — A Copa pra quem não saca de futebol</title>
-  <meta name="description" content="Acompanhe o Brasil na Copa 2026 sem entender nada de futebol: termômetro do hexa, próximo jogo, palpites e as regras explicadas fácil." />
+  <meta name="description"
+    content="Acompanhe o Brasil na Copa 2026 sem entender nada de futebol: termômetro do hexa, próximo jogo, palpites e as regras explicadas fácil." />
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=satoshi@400,500,700&display=swap" />
+  <link rel="stylesheet"
+    href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=satoshi@400,500,700&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
+
 <body>
   <div id="barra-conta" class="barra-conta"></div>
 
@@ -22,13 +26,19 @@
       <span class="brush brush--ouro"></span>
     </div>
     <div class="hero__conteudo">
-      <p class="eyebrow">Copa do Mundo FIFA 2026 · pra quem não saca de futebol</p>
+      <p class="eyebrow">Copa do Mundo FIFA 2026 · pra quem não manja de futebol</p>
       <h1 class="hero__titulo">
         <span class="linha">Temos</span>
         <span class="linha">chance ao</span>
         <span class="linha linha--ouro">hexa?</span>
       </h1>
-      <p class="hero__tagline">A gente te conta como o Brasil tá indo — sem nenhum termo difícil. <svg class="bandeira" viewBox="0 0 28 20" role="img" aria-label="Brasil"><rect width="28" height="20" rx="2" fill="#009c3b"/><path d="M14 2.5 25.5 10 14 17.5 2.5 10Z" fill="#ffdf00"/><circle cx="14" cy="10" r="4" fill="#002776"/></svg></p>
+      <p class="hero__tagline">A gente te entende: não sabe nada de futebol, mas quer entrar pra festa? Vem conferir
+        como o Brasil tá indo sem nenhum termo difícil. <svg class="bandeira" viewBox="0 0 28 20" role="img"
+          aria-label="Brasil">
+          <rect width="28" height="20" rx="2" fill="#009c3b" />
+          <path d="M14 2.5 25.5 10 14 17.5 2.5 10Z" fill="#ffdf00" />
+          <circle cx="14" cy="10" r="4" fill="#002776" />
+        </svg></p>
       <section id="termometro" class="termometro" aria-live="polite"></section>
     </div>
     <div class="hero__bola" id="hero-bola" aria-hidden="true">⚽</div>
@@ -36,24 +46,12 @@
 
   <div class="marquee" aria-hidden="true">
     <div class="marquee__trilho">
-      <span>Rumo ao hexa ✦ Temos chance? ✦ Aqui é Brasil ✦ Raça em cada jogada ✦ </span>
-      <span>Rumo ao hexa ✦ Temos chance? ✦ Aqui é Brasil ✦ Raça em cada jogada ✦ </span>
+      <span>Rumo ao hexa ✦ Temos chance? ✦ Aqui é Brasilzilzil ✦ Raça em cada jogada ✦</span>
+      <span>Rumo ao hexa ✦ Temos chance? ✦ Aqui é Brasilzilzil ✦ Raça em cada jogada ✦</span>
     </div>
   </div>
 
   <main>
-    <section class="panel panel--verde reveal">
-      <div class="bloco intro">
-        <p class="eyebrow eyebrow--claro">Calma, eu te explico</p>
-        <h2 class="titulo-secao">Você não precisa entender de futebol pra entrar na festa.</h2>
-        <p class="intro__texto">
-          Aqui a gente traduz tudo: como o Brasil está indo, o que precisa
-          acontecer no próximo jogo e o que cada palavra esquisita significa.
-          Sem vergonha de perguntar. 🎉
-        </p>
-      </div>
-    </section>
-
     <section id="proximo-jogo" class="panel panel--creme proximo reveal"></section>
 
     <section id="grupo" class="panel panel--noite grupo reveal"></section>
@@ -62,8 +60,8 @@
 
     <div class="marquee marquee--reverso" aria-hidden="true">
       <div class="marquee__trilho">
-        <span>Dá seu palpite ✦ Bate um pênalti ✦ Chama a galera ✦ Vai Brasil ✦ </span>
-        <span>Dá seu palpite ✦ Bate um pênalti ✦ Chama a galera ✦ Vai Brasil ✦ </span>
+        <span>Dá seu palpite ✦ Bate um pênalti ✦ Chama a galera ✦ Vai Brasilllllllll ✦</span>
+        <span>Dá seu palpite ✦ Bate um pênalti ✦ Chama a galera ✦ Vai Brasilllllllll ✦</span>
       </div>
     </div>
 
@@ -73,8 +71,10 @@
       <div class="bloco">
         <p class="eyebrow eyebrow--claro">Hora de jogar</p>
         <h2 class="titulo-secao titulo-secao--claro">Bate um pênalti</h2>
-        <p class="jogo-secao__dica">Puxe a bola, mire e solte pra chutar. No celular, é com o dedo. Engana o goleiro e vem confete! 🎉</p>
+        <p class="jogo-secao__dica">Puxe a bola, mire e solte pra chutar. No celular, é com o dedo. Engana o goleiro e
+          vem confete! 🎉</p>
         <div id="jogo" class="jogo"></div>
+        <div id="jogo-ranking" class="jogo__ranking"></div>
       </div>
     </section>
 
@@ -85,4 +85,5 @@
 
   <script type="module" src="./js/app.js"></script>
 </body>
+
 </html>

@@ -5,6 +5,14 @@ import { montarJogoGol } from './jogo-gol.js';
 import { ativarTooltipsTermos } from './termos-inline.js';
 import { ativarReveals, ativarHeroBola } from './animacoes.js';
 import { montarBarraConta } from './conta-ui.js';
+import { perfilAtual, tokenAtual } from './conta.js';
+
+function cabecalhos() {
+  const token = tokenAtual();
+  return token
+    ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    : { 'Content-Type': 'application/json' };
+}
 
 async function carregarDados() {
   try {
@@ -50,6 +58,18 @@ async function atualizarPalpite(proximoJogo) {
   render.renderRanking(document.querySelector('#palpite-ranking'), await carregarRanking());
 }
 
+async function carregarRankingJogo() {
+  try {
+    const r = await fetch('/api/placar-jogo?ranking');
+    if (r.ok) return (await r.json()).ranking || [];
+  } catch {}
+  return [];
+}
+
+async function atualizarRankingJogo() {
+  render.renderRankingJogo(document.querySelector('#jogo-ranking'), await carregarRankingJogo());
+}
+
 async function init() {
   montarBarraConta(document.querySelector('#barra-conta'), { aoMudar: () => location.reload() });
   const dados = await carregarDados();
@@ -60,25 +80,23 @@ async function init() {
   render.renderGlossario(document.querySelector('#glossario'));
 
   const proximoJogo = dados.proximoJogo;
+  const perfil = perfilAtual();
   render.renderPalpite(document.querySelector('#palpite'), proximoJogo, {
     onEnviar: async ({ apelido, placarBrasil, placarAdversario }) => {
       const status = document.querySelector('#palpite-status');
-      if (!apelido.trim()) {
+      if (!perfil && (!apelido || !apelido.trim())) {
         status.textContent = 'Põe um apelido pra valer o palpite. 🙂';
         return;
       }
       status.textContent = 'Enviando...';
+      const corpo = perfil
+        ? { jogoId: proximoJogo.id, placarBrasil, placarAdversario }
+        : { jogoId: proximoJogo.id, usuarioId: usuarioId(), apelido, placarBrasil, placarAdversario };
       try {
         const r = await fetch('/api/palpites', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jogoId: proximoJogo.id,
-            usuarioId: usuarioId(),
-            apelido,
-            placarBrasil,
-            placarAdversario,
-          }),
+          headers: cabecalhos(),
+          body: JSON.stringify(corpo),
         });
         status.textContent = r.ok ? 'Palpite registrado! 🎉' : 'Não rolou agora, tenta de novo.';
       } catch {
@@ -86,7 +104,7 @@ async function init() {
       }
       atualizarPalpite(proximoJogo);
     },
-  }, dados.estado);
+  }, dados.estado, perfil);
 
   atualizarPalpite(proximoJogo);
 
@@ -96,8 +114,21 @@ async function init() {
     texto: 'Temos chance ao hexa? Entenda a Copa sem saber nada de futebol:',
   });
   montarJogoGol(document.querySelector('#jogo'), {
-    onGol: () => dispararConfete({ quantidade: 110 }),
+    onGol: async ({ sequencia }) => {
+      dispararConfete({ quantidade: 110 });
+      if (tokenAtual()) {
+        try {
+          await fetch('/api/placar-jogo', {
+            method: 'POST',
+            headers: cabecalhos(),
+            body: JSON.stringify({ golsNaPartida: 1, sequenciaNaPartida: sequencia }),
+          });
+        } catch {}
+        atualizarRankingJogo();
+      }
+    },
   });
+  atualizarRankingJogo();
   ativarCursorBolas(['#proximo-jogo', '#craques']);
   ativarTooltipsTermos();
   ativarReveals();
