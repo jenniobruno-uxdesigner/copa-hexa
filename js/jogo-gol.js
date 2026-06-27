@@ -40,6 +40,7 @@ export function montarJogoGol(container, { onGol } = {}) {
 
   let gols = 0;
   let chutes = 0;
+  let sequencia = 0;
   const bola = { ...BOLA_INICIO, vx: 0, vy: 0 };
   const goleiro = { x: 180, alvo: 180 };
   let arrastando = false;
@@ -92,7 +93,10 @@ export function montarJogoGol(container, { onGol } = {}) {
     chutes += 1;
     if (foiGol) {
       gols += 1;
-      if (onGol) onGol();
+      sequencia += 1;
+      if (onGol) onGol({ sequencia });
+    } else {
+      sequencia = 0;
     }
     msg.textContent = texto;
     placar.textContent = `Gols: ${gols} de ${chutes}`;
