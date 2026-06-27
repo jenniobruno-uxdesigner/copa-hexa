@@ -76,7 +76,6 @@ async function init() {
   render.renderTermometro(document.querySelector('#termometro'), dados.estado);
   render.renderProximoJogo(document.querySelector('#proximo-jogo'), dados.proximoJogo, dados.estado);
   render.renderGrupo(document.querySelector('#grupo'), dados.grupo);
-  render.renderCraques(document.querySelector('#craques'), dados.artilheiros);
   render.renderGlossario(document.querySelector('#glossario'));
 
   const proximoJogo = dados.proximoJogo;
@@ -129,7 +128,12 @@ async function init() {
     },
   });
   atualizarRankingJogo();
-  ativarCursorBolas(['#proximo-jogo', '#craques']);
+  if (!perfil) {
+    const elLogin = document.querySelector('#jogo-login');
+    elLogin.innerHTML = 'Entrou no clima? <button type="button" class="botao-podio">Entrar pra disputar o pódio 🏆</button>';
+    elLogin.querySelector('button').addEventListener('click', () => document.dispatchEvent(new Event('abrir-login')));
+  }
+  ativarCursorBolas(['#proximo-jogo']);
   ativarTooltipsTermos();
   ativarReveals();
   ativarHeroBola();

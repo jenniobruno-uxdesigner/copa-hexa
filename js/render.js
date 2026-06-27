@@ -119,29 +119,6 @@ export function renderGrupo(el, grupo) {
   `;
 }
 
-export function renderCraques(el, artilheiros) {
-  const corpo =
-    !artilheiros || artilheiros.length === 0
-      ? '<p>Ainda sem gols na conta. Bola rolando! ⚽</p>'
-      : `<ul class="craques">${artilheiros
-          .map(
-            (a) => `
-        <li>
-          <span class="craque__nome">${a.nome}</span>
-          <span class="craque__time">${a.time}</span>
-          <span class="craque__gols">⚽ ${a.gols}</span>
-        </li>`
-          )
-          .join('')}</ul>`;
-  el.innerHTML = `
-    <div class="bloco">
-      <p class="eyebrow">Em quem prestar atenção</p>
-      <h2 class="titulo-secao">Craques pra torcer</h2>
-      ${corpo}
-    </div>
-  `;
-}
-
 export function renderPalpite(el, proximoJogo, { onEnviar }, estado, perfil) {
   if (!proximoJogo) {
     const m = semJogo(estado);
@@ -159,7 +136,8 @@ export function renderPalpite(el, proximoJogo, { onEnviar }, estado, perfil) {
   const identidade = perfil
     ? `<p class="palpite__como">Palpitando como <strong>${esc(perfil.nome)}</strong></p>`
     : `<input class="palpite__apelido" id="palpite-apelido" type="text" maxlength="40" placeholder="Seu apelido" required />
-       <p class="palpite__convite">Anônimo entra na vibe. Quer aparecer no <strong>pódio</strong>? Entre lá no topo 🏆</p>`;
+       <p class="palpite__convite">Anônimo entra na vibe. Quer aparecer no <strong>pódio</strong>?</p>
+       <button type="button" class="botao-podio" id="palpite-login">Entrar pra disputar o pódio 🏆</button>`;
 
   el.innerHTML = `
     <div class="bloco">
@@ -190,6 +168,11 @@ export function renderPalpite(el, proximoJogo, { onEnviar }, estado, perfil) {
       placarAdversario: Number(el.querySelector('#palpite-adv').value),
     });
   });
+
+  const botaoLogin = el.querySelector('#palpite-login');
+  if (botaoLogin) {
+    botaoLogin.addEventListener('click', () => document.dispatchEvent(new Event('abrir-login')));
+  }
 }
 
 export function renderVibe(el, vibe, adversario) {

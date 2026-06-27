@@ -97,6 +97,9 @@ export function montarBarraConta(el, { aoMudar } = {}) {
     prepararGoogle(overlay, erro, aoLogar);
   }
 
+  // Atalho: qualquer seção pode abrir o login disparando este evento.
+  document.addEventListener('abrir-login', abrirModal);
+
   render();
 }
 
