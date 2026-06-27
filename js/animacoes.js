@@ -22,7 +22,7 @@ export function ativarReveals() {
 }
 
 // Bola do herói: dá pra agarrar e arremessar; ela volta pro lugar com mola.
-export function ativarHeroBola() {
+export function ativarHeroBola({ aoMover } = {}) {
   const bola = document.querySelector('#hero-bola');
   if (!bola) return;
   bola.classList.add('bobinha');
@@ -33,7 +33,10 @@ export function ativarHeroBola() {
   let ultimo = null;
   let raf = 0;
 
-  const aplicar = () => { bola.style.transform = `translate(${x}px, ${y}px)`; };
+  const aplicar = () => {
+    bola.style.transform = `translate(${x}px, ${y}px)`;
+    if (aoMover) aoMover(bola.getBoundingClientRect());
+  };
   const pararEIdle = () => {
     cancelAnimationFrame(raf);
     raf = 0;
@@ -58,7 +61,9 @@ export function ativarHeroBola() {
 
   bola.addEventListener('pointerdown', (e) => {
     e.preventDefault();
-    bola.setPointerCapture(e.pointerId);
+    try {
+      bola.setPointerCapture(e.pointerId);
+    } catch {}
     bola.classList.remove('bobinha');
     bola.style.cursor = 'grabbing';
     modo = 'arrasta';

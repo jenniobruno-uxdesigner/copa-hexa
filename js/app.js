@@ -4,6 +4,7 @@ import { ativarCursorBolas } from './cursor-bolas.js';
 import { montarJogoGol } from './jogo-gol.js';
 import { ativarTooltipsTermos } from './termos-inline.js';
 import { ativarReveals, ativarHeroBola } from './animacoes.js';
+import { ativarBolicheTitulo } from './boliche-titulo.js';
 import { montarBarraConta } from './conta-ui.js';
 import { perfilAtual, tokenAtual } from './conta.js';
 
@@ -136,7 +137,8 @@ async function init() {
   ativarCursorBolas(['#proximo-jogo']);
   ativarTooltipsTermos();
   ativarReveals();
-  ativarHeroBola();
+  const checarBoliche = ativarBolicheTitulo('.hero__titulo');
+  ativarHeroBola({ aoMover: checarBoliche });
   dispararConfete();
 }
 
