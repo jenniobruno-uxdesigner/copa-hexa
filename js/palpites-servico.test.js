@@ -17,6 +17,7 @@ function dbFake(palpites = []) {
     async salvarPalpite(p) { this.salvos.push(p); },
     async palpitesDoJogo(jogoId) { return palpites.filter((p) => p.jogoId === jogoId); },
     async todosPalpites() { return palpites; },
+    async palpitesDeContas() { return palpites; },
   };
 }
 
@@ -48,6 +49,21 @@ test('POST com placar inválido é rejeitado (400)', async () => {
   const res = resFake();
   await tratarRequisicao(req, res, { db, resultados: semResultados });
   assert.equal(res.statusCode, 400);
+});
+
+test('POST logado anexa conta_id e usa o nome da conta', async () => {
+  const db = dbFake();
+  const res = resFake();
+  const usuarioDaSessao = () => ({ id: 5, nome: 'Ana' });
+  await tratarRequisicao(
+    { method: 'POST', query: {}, body: { jogoId: 'J1', placarBrasil: 2, placarAdversario: 1 } },
+    res,
+    { db, resultados: semResultados, usuarioDaSessao }
+  );
+  assert.equal(res.statusCode, 200);
+  assert.equal(db.salvos[0].contaId, 5);
+  assert.equal(db.salvos[0].usuarioId, 'conta-5');
+  assert.equal(db.salvos[0].apelido, 'Ana');
 });
 
 test('POST com corpo nulo ou sem campos é rejeitado (400)', async () => {

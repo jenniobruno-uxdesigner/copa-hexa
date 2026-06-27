@@ -7,13 +7,12 @@ function placarValido(n) {
   return Number.isInteger(n) && n >= 0 && n <= PLACAR_MAX;
 }
 
-function palpiteValido(b) {
+function palpiteProntoValido(p) {
   return (
-    b &&
-    typeof b.jogoId === 'string' && b.jogoId.length > 0 &&
-    typeof b.usuarioId === 'string' && b.usuarioId.length > 0 &&
-    typeof b.apelido === 'string' && b.apelido.trim().length > 0 &&
-    placarValido(b.placarBrasil) && placarValido(b.placarAdversario)
+    typeof p.jogoId === 'string' && p.jogoId.length > 0 &&
+    typeof p.usuarioId === 'string' && p.usuarioId.length > 0 &&
+    typeof p.apelido === 'string' && p.apelido.trim().length > 0 &&
+    placarValido(p.placarBrasil) && placarValido(p.placarAdversario)
   );
 }
 
@@ -21,7 +20,7 @@ function palpiteValido(b) {
 // em vez de rodar o DDL a cada request.
 let esquemaPronto = false;
 
-export async function tratarRequisicao(req, res, { db, resultados }) {
+export async function tratarRequisicao(req, res, { db, resultados, usuarioDaSessao }) {
   if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ erro: 'método não suportado' });
   }
@@ -32,22 +31,34 @@ export async function tratarRequisicao(req, res, { db, resultados }) {
   }
 
   if (req.method === 'POST') {
-    const b = req.body;
-    if (!palpiteValido(b)) {
+    const b = req.body || {};
+    const sessao = usuarioDaSessao ? usuarioDaSessao(req) : null;
+    const palpite = sessao
+      ? {
+          jogoId: b.jogoId,
+          usuarioId: `conta-${sessao.id}`,
+          apelido: sessao.nome,
+          contaId: sessao.id,
+          placarBrasil: b.placarBrasil,
+          placarAdversario: b.placarAdversario,
+        }
+      : {
+          jogoId: b.jogoId,
+          usuarioId: b.usuarioId,
+          apelido: typeof b.apelido === 'string' ? b.apelido.trim().slice(0, 40) : b.apelido,
+          contaId: null,
+          placarBrasil: b.placarBrasil,
+          placarAdversario: b.placarAdversario,
+        };
+    if (!palpiteProntoValido(palpite)) {
       return res.status(400).json({ ok: false, erro: 'palpite inválido' });
     }
-    await db.salvarPalpite({
-      jogoId: b.jogoId,
-      usuarioId: b.usuarioId,
-      apelido: b.apelido.trim().slice(0, 40),
-      placarBrasil: b.placarBrasil,
-      placarAdversario: b.placarAdversario,
-    });
+    await db.salvarPalpite(palpite);
     return res.status(200).json({ ok: true });
   }
 
   if (req.query.ranking !== undefined) {
-    const [palpites, mapa] = await Promise.all([db.todosPalpites(), resultados()]);
+    const [palpites, mapa] = await Promise.all([db.palpitesDeContas(), resultados()]);
     return res.status(200).json({ ranking: calcularRanking(palpites, mapa) });
   }
 
