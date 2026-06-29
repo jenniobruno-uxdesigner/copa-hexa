@@ -39,3 +39,33 @@ test('percentuais arredondados não precisam somar 100', () => {
     [33, 33, 33]
   );
 });
+
+test('agrupa os palpiteiros logados (com conta) por placar', () => {
+  const v = calcularVibe([
+    { placarBrasil: 2, placarAdversario: 1, contaId: 1, nome: 'Ana', foto: 'a.jpg' },
+    { placarBrasil: 2, placarAdversario: 1, contaId: 2, nome: 'Beto', foto: null },
+    { placarBrasil: 1, placarAdversario: 0, contaId: 3, nome: 'Caio', foto: 'c.jpg' },
+  ]);
+  const dois1 = v.placares.find((p) => p.rotulo === '2x1');
+  assert.equal(dois1.quantidade, 2);
+  assert.deepEqual(dois1.palpiteiros, [
+    { nome: 'Ana', foto: 'a.jpg' },
+    { nome: 'Beto', foto: null },
+  ]);
+});
+
+test('anônimos contam na distribuição, mas não aparecem como palpiteiros', () => {
+  const v = calcularVibe([
+    { placarBrasil: 2, placarAdversario: 1, contaId: 1, nome: 'Ana', foto: null },
+    { placarBrasil: 2, placarAdversario: 1, contaId: null, apelido: 'Zé Anônimo' },
+  ]);
+  const dois1 = v.placares[0];
+  assert.equal(dois1.quantidade, 2);
+  assert.equal(dois1.percentual, 100);
+  assert.deepEqual(dois1.palpiteiros, [{ nome: 'Ana', foto: null }]);
+});
+
+test('placares sem ninguém logado vêm com palpiteiros vazio', () => {
+  const v = calcularVibe([{ placarBrasil: 0, placarAdversario: 0 }]);
+  assert.deepEqual(v.placares[0].palpiteiros, []);
+});

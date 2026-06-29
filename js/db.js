@@ -82,11 +82,20 @@ export function criarDb(consulta) {
       }));
     },
     async palpitesDoJogo(jogoId) {
+      // LEFT JOIN: anônimos (conta_id nulo) entram com nome/foto nulos.
       const linhas = await consulta(
-        `SELECT jogo_id, usuario_id, apelido, placar_brasil, placar_adversario FROM palpites WHERE jogo_id = $1`,
+        `SELECT p.jogo_id, p.usuario_id, p.apelido, p.placar_brasil, p.placar_adversario,
+                p.conta_id, u.nome, u.foto_url
+         FROM palpites p LEFT JOIN usuarios u ON u.id = p.conta_id
+         WHERE p.jogo_id = $1`,
         [jogoId]
       );
-      return linhas.map(mapaPalpite);
+      return linhas.map((r) => ({
+        ...mapaPalpite(r),
+        contaId: r.conta_id,
+        nome: r.nome,
+        foto: r.foto_url,
+      }));
     },
     async todosPalpites() {
       const linhas = await consulta(
