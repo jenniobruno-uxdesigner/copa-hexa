@@ -75,8 +75,8 @@ async function init() {
   montarBarraConta(document.querySelector('#barra-conta'), { aoMudar: () => location.reload() });
   const dados = await carregarDados();
   render.renderTermometro(document.querySelector('#termometro'), dados.estado);
+  render.renderJogosPassados(document.querySelector('#jogos-passados'), dados.jogosPassados);
   render.renderProximoJogo(document.querySelector('#proximo-jogo'), dados.proximoJogo, dados.estado);
-  render.renderGrupo(document.querySelector('#grupo'), dados.grupo);
   render.renderGlossario(document.querySelector('#glossario'));
 
   const proximoJogo = dados.proximoJogo;

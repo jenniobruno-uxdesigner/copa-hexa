@@ -212,3 +212,42 @@ test('montarResultados mapeia jogos encerrados do Brasil (casa e fora)', () => {
 test('montarResultados com entrada vazia devolve objeto vazio', () => {
   assert.deepEqual(montarResultados({}), {});
 });
+
+import { jogosPassadosDoBrasil } from './normalizar.js';
+
+test('jogosPassadosDoBrasil lista só os encerrados do Brasil, do mais antigo ao recente', () => {
+  const raw = { matches: [
+    { id: 1, homeTeam: { name: 'Brazil' }, awayTeam: { name: 'Serbia' }, status: 'TIMED', stage: 'GROUP_STAGE', group: 'GROUP_G', utcDate: '2026-06-28T19:00:00Z', score: { fullTime: { home: null, away: null }, winner: null } },
+    { id: 2, homeTeam: { name: 'Brazil' }, awayTeam: { name: 'Cameroon' }, status: 'FINISHED', stage: 'GROUP_STAGE', group: 'GROUP_G', utcDate: '2026-06-24T19:00:00Z', score: { fullTime: { home: 2, away: 0 }, winner: 'HOME_TEAM' } },
+    { id: 3, homeTeam: { name: 'Switzerland' }, awayTeam: { name: 'Brazil' }, status: 'FINISHED', stage: 'GROUP_STAGE', group: 'GROUP_G', utcDate: '2026-06-20T19:00:00Z', score: { fullTime: { home: 1, away: 1 }, winner: 'DRAW' } },
+    { id: 9, homeTeam: { name: 'France' }, awayTeam: { name: 'Spain' }, status: 'FINISHED', stage: 'GROUP_STAGE', group: 'GROUP_A', utcDate: '2026-06-22T19:00:00Z', score: { fullTime: { home: 0, away: 0 }, winner: 'DRAW' } },
+  ] };
+  const jogos = jogosPassadosDoBrasil(raw);
+  assert.equal(jogos.length, 2);
+  // mais antigo primeiro: empate fora contra a Suíça
+  assert.equal(jogos[0].adversario, 'Suíça');
+  assert.equal(jogos[0].placarBrasil, 1);
+  assert.equal(jogos[0].placarAdversario, 1);
+  assert.equal(jogos[0].resultado, 'empate');
+  // vitória em casa sobre Camarões
+  assert.equal(jogos[1].adversario, 'Camarões');
+  assert.equal(jogos[1].placarBrasil, 2);
+  assert.equal(jogos[1].placarAdversario, 0);
+  assert.equal(jogos[1].resultado, 'vitoria');
+});
+
+test('jogosPassadosDoBrasil marca derrota como visitante', () => {
+  const raw = { matches: [
+    { id: 5, homeTeam: { name: 'Argentina' }, awayTeam: { name: 'Brazil' }, status: 'FINISHED', stage: 'LAST_16', utcDate: '2026-07-05T19:00:00Z', score: { fullTime: { home: 2, away: 1 }, winner: 'HOME_TEAM' } },
+  ] };
+  const jogos = jogosPassadosDoBrasil(raw);
+  assert.equal(jogos[0].adversario, 'Argentina');
+  assert.equal(jogos[0].placarBrasil, 1);
+  assert.equal(jogos[0].placarAdversario, 2);
+  assert.equal(jogos[0].resultado, 'derrota');
+  assert.equal(jogos[0].fase, 'Oitavas de final');
+});
+
+test('jogosPassadosDoBrasil vazio quando não há jogos encerrados', () => {
+  assert.deepEqual(jogosPassadosDoBrasil({}), []);
+});

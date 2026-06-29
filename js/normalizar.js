@@ -206,6 +206,39 @@ export function derivarEstado(grupo, proximoJogo, matchesRaw, vagasNoGrupo = 2) 
   return { ...base, situacao: 'grupos' };
 }
 
+// Jogos do Brasil já encerrados, do mais antigo ao mais recente, com placar e
+// quem ganhou. "empate" cobre o 0–0/1–1 da fase de grupos; "indefinido" só
+// aparece quando faltam dados de placar (nunca afirma um resultado sem certeza).
+export function jogosPassadosDoBrasil(matchesRaw) {
+  return (matchesRaw.matches || [])
+    .filter((m) => m.homeTeam.name === TIME_BRASIL || m.awayTeam.name === TIME_BRASIL)
+    .filter((m) => FINALIZADOS.has(m.status))
+    .sort((a, b) => new Date(a.utcDate) - new Date(b.utcDate))
+    .map((m) => {
+      const ehCasa = m.homeTeam.name === TIME_BRASIL;
+      const adversarioRaw = ehCasa ? m.awayTeam.name : m.homeTeam.name;
+      const ft = (m.score && m.score.fullTime) || {};
+      const placarBrasil = ehCasa ? ft.home : ft.away;
+      const placarAdversario = ehCasa ? ft.away : ft.home;
+      const res = resultadoBrasil(m);
+      const resultado =
+        res !== 'indefinido'
+          ? res
+          : placarBrasil != null && placarBrasil === placarAdversario
+          ? 'empate'
+          : 'indefinido';
+      return {
+        id: m.id != null ? String(m.id) : `${m.homeTeam.name}-${m.awayTeam.name}-${m.utcDate}`,
+        adversario: traduzTime(adversarioRaw),
+        data: m.utcDate,
+        fase: traduzFase(m.stage, m.group),
+        placarBrasil: placarBrasil == null ? null : placarBrasil,
+        placarAdversario: placarAdversario == null ? null : placarAdversario,
+        resultado,
+      };
+    });
+}
+
 export function montarDados(raw, agora = new Date()) {
   const grupo = grupoDoBrasil(raw.standings || {});
   const proximoJogo = proximoJogoDoBrasil(raw.matches || {});
@@ -215,6 +248,7 @@ export function montarDados(raw, agora = new Date()) {
     fonte: 'api',
     estado,
     proximoJogo,
+    jogosPassados: jogosPassadosDoBrasil(raw.matches || {}),
     grupo,
     artilheiros: artilheiros(raw.scorers || {}),
   };

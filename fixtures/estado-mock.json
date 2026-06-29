@@ -17,6 +17,17 @@
     "placarBrasil": null,
     "placarAdversario": null
   },
+  "jogosPassados": [
+    {
+      "id": "BRA-CMR-2026-06-22",
+      "adversario": "Camarões",
+      "data": "2026-06-22T19:00:00Z",
+      "fase": "Fase de grupos - 1ª rodada",
+      "placarBrasil": 2,
+      "placarAdversario": 0,
+      "resultado": "vitoria"
+    }
+  ],
   "grupo": {
     "nome": "Grupo G",
     "times": [
