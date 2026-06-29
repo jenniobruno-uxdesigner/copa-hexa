@@ -15,6 +15,35 @@ function cabecalhos() {
     : { 'Content-Type': 'application/json' };
 }
 
+const CHAVE_SCROLL = 'copaScrollY';
+
+// Login/logout recarregam a página pra re-renderizar tudo com a sessão nova.
+// Guardamos a rolagem antes do reload e restauramos depois que as seções são
+// montadas, pra pessoa continuar na mesma seção em vez de voltar ao topo.
+function lembrarScrollEReload() {
+  try {
+    sessionStorage.setItem(CHAVE_SCROLL, String(window.scrollY));
+  } catch {}
+  location.reload();
+}
+
+function restaurarScroll() {
+  let y = null;
+  try {
+    y = sessionStorage.getItem(CHAVE_SCROLL);
+    if (y != null) sessionStorage.removeItem(CHAVE_SCROLL);
+  } catch {}
+  if (y == null) return;
+  const destino = parseInt(y, 10) || 0;
+  // O DOM já está montado aqui (última etapa do init), então pulamos direto,
+  // sem a rolagem suave do CSS, pra não animar do topo até a posição.
+  const html = document.documentElement;
+  const antes = html.style.scrollBehavior;
+  html.style.scrollBehavior = 'auto';
+  window.scrollTo(0, destino);
+  html.style.scrollBehavior = antes;
+}
+
 async function carregarDados() {
   try {
     const r = await fetch('/api/dados');
@@ -72,7 +101,10 @@ async function atualizarRankingJogo() {
 }
 
 async function init() {
-  montarBarraConta(document.querySelector('#barra-conta'), { aoMudar: () => location.reload() });
+  // Controlamos a rolagem na mão (o conteúdo é montado por JS, então a
+  // restauração automática do browser cairia no topo).
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  montarBarraConta(document.querySelector('#barra-conta'), { aoMudar: lembrarScrollEReload });
   const dados = await carregarDados();
   render.renderTermometro(document.querySelector('#termometro'), dados.estado);
   render.renderJogosPassados(document.querySelector('#jogos-passados'), dados.jogosPassados);
@@ -140,6 +172,7 @@ async function init() {
   const checarBoliche = ativarBolicheTitulo('.hero__titulo');
   ativarHeroBola({ aoMover: checarBoliche });
   dispararConfete();
+  restaurarScroll();
 }
 
 init();
