@@ -41,6 +41,32 @@ function ligarFallbackAvatar(el) {
   });
 }
 
+// Pilha de avatares de quem palpitou aquele placar (só quem logou). Várias
+// pessoas no mesmo placar = avatares sobrepostos; passar o mouse mostra o nome.
+function avataresPalpiteiros(palpiteiros, max = 4) {
+  if (!palpiteiros || palpiteiros.length === 0) return '';
+  const visiveis = palpiteiros.slice(0, max);
+  const resto = palpiteiros.slice(max);
+  const um = (p) => {
+    const letra = esc((p.nome || '?').trim().charAt(0).toUpperCase() || '?');
+    const interno = p.foto ? `<img src="${esc(p.foto)}" alt="" />` : letra;
+    return `<span class="palpiteiro" data-letra="${letra}" tabindex="0">${interno}<span class="palpiteiro__nome">${esc(p.nome)}</span></span>`;
+  };
+  const mais = resto.length
+    ? `<span class="palpiteiro palpiteiro--mais" tabindex="0">+${resto.length}<span class="palpiteiro__nome">${esc(resto.map((p) => p.nome).join(', '))}</span></span>`
+    : '';
+  return `<span class="palpiteiros">${visiveis.map(um).join('')}${mais}</span>`;
+}
+
+// Fallback de foto que NÃO apaga o tooltip do nome: só troca a <img> pela letra.
+function ligarFallbackPalpiteiros(el) {
+  el.querySelectorAll('.palpiteiro img').forEach((img) => {
+    img.addEventListener('error', () => {
+      img.replaceWith(document.createTextNode(img.parentElement.dataset.letra));
+    });
+  });
+}
+
 export function renderTermometro(el, estado) {
   const s = statusHexa(estado);
   const ativos = NIVEIS.indexOf(s.nivel) + 1;
@@ -211,10 +237,12 @@ export function renderVibe(el, vibe, adversario) {
     .map(
       (p) => `<li><span class="vibe__rotulo">Brasil ${p.rotulo.replace('x', `× ${adversario} `)}</span>
         <span class="vibe__barra"><span style="width:${p.percentual}%"></span></span>
-        <span class="vibe__pct">${p.percentual}%</span></li>`
+        <span class="vibe__pct">${p.percentual}%</span>
+        ${avataresPalpiteiros(p.palpiteiros)}</li>`
     )
     .join('');
   el.innerHTML = `<h3>A vibe da galera (${vibe.total})</h3><ul class="vibe">${linhas}</ul>`;
+  ligarFallbackPalpiteiros(el);
 }
 
 export function renderRanking(el, ranking) {

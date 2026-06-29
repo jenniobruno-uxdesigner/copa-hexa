@@ -36,15 +36,22 @@ test('salvarPalpite grava conta_id quando logado', async () => {
   assert.equal(consulta.chamadas[0].params[5], 5);
 });
 
-test('palpitesDoJogo mapeia as linhas para o formato interno', async () => {
+test('palpitesDoJogo junta com usuarios e traz a identidade de quem logou', async () => {
   const consulta = consultaFake([[
-    { jogo_id: 'J1', usuario_id: 'u1', apelido: 'Ana', placar_brasil: 2, placar_adversario: 1 },
+    { jogo_id: 'J1', usuario_id: 'conta-5', apelido: 'Ana', placar_brasil: 2, placar_adversario: 1, conta_id: 5, nome: 'Ana', foto_url: 'http://x/a.png' },
+    { jogo_id: 'J1', usuario_id: 'u9', apelido: 'Zé', placar_brasil: 2, placar_adversario: 1, conta_id: null, nome: null, foto_url: null },
   ]]);
   const linhas = await criarDb(consulta).palpitesDoJogo('J1');
-  assert.deepEqual(linhas, [
-    { jogoId: 'J1', usuarioId: 'u1', apelido: 'Ana', placarBrasil: 2, placarAdversario: 1 },
-  ]);
+  assert.match(consulta.chamadas[0].texto, /LEFT JOIN usuarios/);
   assert.deepEqual(consulta.chamadas[0].params, ['J1']);
+  assert.deepEqual(linhas[0], {
+    jogoId: 'J1', usuarioId: 'conta-5', apelido: 'Ana', placarBrasil: 2, placarAdversario: 1,
+    contaId: 5, nome: 'Ana', foto: 'http://x/a.png',
+  });
+  assert.deepEqual(linhas[1], {
+    jogoId: 'J1', usuarioId: 'u9', apelido: 'Zé', placarBrasil: 2, placarAdversario: 1,
+    contaId: null, nome: null, foto: null,
+  });
 });
 
 test('todosPalpites mapeia todas as linhas', async () => {

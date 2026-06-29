@@ -677,7 +677,7 @@ h3 {
 
 .vibe li {
   display: grid;
-  grid-template-columns: minmax(70px, auto) 1fr auto;
+  grid-template-columns: minmax(64px, auto) 1fr auto auto;
   align-items: center;
   gap: 0.6rem;
 }
@@ -703,6 +703,86 @@ h3 {
 .vibe__pct {
   font-family: var(--mono);
   font-weight: 700;
+}
+
+/* Quem palpitou cada placar: pilha de avatares sobrepostos à direita */
+.palpiteiros {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  padding-left: 4px;
+}
+
+.palpiteiro {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--verde);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.7rem;
+  flex: 0 0 auto;
+  margin-left: -8px;
+  border: 2px solid var(--noite);
+  cursor: default;
+}
+
+.palpiteiro:first-child {
+  margin-left: 0;
+}
+
+.palpiteiro:hover,
+.palpiteiro:focus-visible {
+  z-index: 3;
+}
+
+.palpiteiro img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.palpiteiro--mais {
+  background: rgba(244, 236, 214, 0.22);
+  color: var(--creme);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
+
+/* Tooltip com o nome ao passar o mouse / focar */
+.palpiteiro__nome {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--noite-2);
+  color: var(--creme);
+  border: 1px solid rgba(244, 236, 214, 0.22);
+  padding: 0.22rem 0.55rem;
+  border-radius: 9px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  z-index: 6;
+}
+
+.palpiteiro:hover .palpiteiro__nome,
+.palpiteiro:focus-visible .palpiteiro__nome {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .ranking {
