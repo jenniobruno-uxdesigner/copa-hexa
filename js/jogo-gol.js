@@ -9,7 +9,6 @@ const TRAVE_TOP = 44;
 const BOLA_R = 14;
 const BOLA_INICIO = { x: 180, y: 430 };
 const GOLEIRO_W = 64;
-const GOLEIRO_H = 34;
 const GOLEIRO_Y = 60;
 const FORCA = 0.16;
 const GRAVIDADE = 0.12;
@@ -182,15 +181,8 @@ export function montarJogoGol(container, { onGol } = {}) {
       ctx.stroke();
     }
 
-    // goleiro
-    ctx.fillStyle = '#ffcb05';
-    roundRect(ctx, goleiro.x - GOLEIRO_W / 2, GOLEIRO_Y, GOLEIRO_W, GOLEIRO_H, 8);
-    ctx.fill();
-    ctx.fillStyle = '#08160d';
-    ctx.beginPath();
-    ctx.arc(goleiro.x - GOLEIRO_W / 2, GOLEIRO_Y + GOLEIRO_H / 2, 7, 0, Math.PI * 2);
-    ctx.arc(goleiro.x + GOLEIRO_W / 2, GOLEIRO_Y + GOLEIRO_H / 2, 7, 0, Math.PI * 2);
-    ctx.fill();
+    // goleiro (bonequinho de braços abertos; o vão dos braços = a hitbox da defesa)
+    desenharGoleiro(goleiro.x);
 
     // linha de mira (enquanto arrasta)
     if (arrastando && puxao) {
@@ -226,5 +218,52 @@ export function montarJogoGol(container, { onGol } = {}) {
     c.arcTo(x, y + h, x, y, r);
     c.arcTo(x, y, x + w, y, r);
     c.closePath();
+  }
+
+  // Bonequinho de goleiro no mesmo estilo flat do jogo (paleta da marca +
+  // contorno escuro, igual à bola). cy é a referência vertical; os braços
+  // abertos têm exatamente GOLEIRO_W de vão, casando com a hitbox da defesa.
+  function desenharGoleiro(cx) {
+    const cy = GOLEIRO_Y;
+    const meia = GOLEIRO_W / 2;
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#08160d';
+    ctx.lineJoin = 'round';
+
+    // pernas (atrás do corpo)
+    ctx.fillStyle = '#08160d';
+    roundRect(ctx, cx - 9, cy + 22, 6, 12, 2);
+    ctx.fill();
+    roundRect(ctx, cx + 3, cy + 22, 6, 12, 2);
+    ctx.fill();
+
+    // braços abertos: barra arredondada (o vão = GOLEIRO_W)
+    ctx.fillStyle = '#ffcb05';
+    roundRect(ctx, cx - meia, cy + 8, GOLEIRO_W, 10, 5);
+    ctx.fill();
+    ctx.stroke();
+
+    // camisa (corpo)
+    roundRect(ctx, cx - 12, cy + 4, 24, 22, 7);
+    ctx.fill();
+    ctx.stroke();
+
+    // luvas nas pontas dos braços
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(cx - meia, cy + 13, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx + meia, cy + 13, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // cabeça
+    ctx.fillStyle = '#f4ecd6';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 4, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
   }
 }
