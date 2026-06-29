@@ -91,30 +91,54 @@ export function renderProximoJogo(el, proximoJogo, estado) {
   `;
 }
 
-export function renderGrupo(el, grupo) {
-  const linhas = grupo.times
-    .map(
-      (t) => `
-      <tr${t.nome === 'Brasil' ? ' class="destaque"' : ''}>
-        <td>${t.posicao}º</td>
-        <td>${t.nome}</td>
-        <td>${t.pontos}</td>
-        <td>${t.jogos}</td>
-        <td>${t.saldo > 0 ? '+' : ''}${t.saldo}</td>
-      </tr>`
-    )
+const RESULTADO_TAG = {
+  vitoria: { rotulo: 'Vitória', emoji: '🟢' },
+  empate: { rotulo: 'Empate', emoji: '🟡' },
+  derrota: { rotulo: 'Derrota', emoji: '🔴' },
+  indefinido: { rotulo: 'A confirmar', emoji: '⚪' },
+};
+
+export function renderJogosPassados(el, jogos) {
+  if (!jogos || jogos.length === 0) {
+    el.innerHTML = `
+      <div class="bloco">
+        <p class="eyebrow eyebrow--claro">Já rolou</p>
+        <h2 class="titulo-secao">Ainda não teve jogo</h2>
+        <p class="passados__legenda">Assim que o Brasil entrar em campo, o resultado aparece aqui. ⚽</p>
+      </div>`;
+    return;
+  }
+  // Mais recente primeiro: é o que a galera quer ver primeiro.
+  const itens = [...jogos]
+    .reverse()
+    .map((j) => {
+      const data = new Date(j.data);
+      const dataFmt = data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+      const tag = RESULTADO_TAG[j.resultado] || RESULTADO_TAG.indefinido;
+      const temPlacar = j.placarBrasil != null && j.placarAdversario != null;
+      const pBr = temPlacar ? String(j.placarBrasil) : '–';
+      const pAdv = temPlacar ? String(j.placarAdversario) : '–';
+      return `
+      <li class="passados__jogo passados__jogo--${j.resultado}">
+        <div class="passados__topo">
+          <span class="passados__data">${esc(dataFmt)}</span>
+          <span class="passados__tag">${tag.emoji} ${tag.rotulo}</span>
+        </div>
+        <div class="passados__placar-linha">
+          <span class="passados__time">Brasil</span>
+          <span class="passados__placar"><b>${esc(pBr)}</b><i class="x">×</i><b>${esc(pAdv)}</b></span>
+          <span class="passados__time passados__time--adv">${esc(j.adversario)}</span>
+        </div>
+        <p class="passados__fase">${marcarTermos(j.fase)}</p>
+      </li>`;
+    })
     .join('');
   el.innerHTML = `
     <div class="bloco">
-      <p class="eyebrow eyebrow--claro">Como tá o grupo</p>
-      <h2 class="titulo-secao">O grupo do Brasil — ${grupo.nome}</h2>
-      <p class="grupo__legenda">Os 2 primeiros passam de fase. Quanto mais pontos, melhor.</p>
-      <table class="grupo__tabela">
-        <thead>
-          <tr><th>Pos</th><th>Time</th><th>Pontos</th><th>Jogos</th><th>Saldo</th></tr>
-        </thead>
-        <tbody>${linhas}</tbody>
-      </table>
+      <p class="eyebrow eyebrow--claro">Já rolou</p>
+      <h2 class="titulo-secao">Como o Brasil vem indo</h2>
+      <p class="passados__legenda">Os jogos que já aconteceram — data, quem jogou e como ficou.</p>
+      <ul class="passados">${itens}</ul>
     </div>
   `;
 }

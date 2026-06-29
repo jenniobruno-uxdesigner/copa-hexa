@@ -423,56 +423,129 @@ h3 {
   font-size: 1.05rem;
 }
 
-/* ---------- Grupo (tabela) ---------- */
-.grupo__tabela {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.grupo__tabela th,
-.grupo__tabela td {
-  padding: 0.85rem 0.6rem;
-  text-align: left;
-  border-bottom: 1px solid rgba(244, 236, 214, 0.16);
-}
-
-.grupo__tabela th {
-  font-family: var(--mono);
-  text-transform: uppercase;
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  color: var(--ouro);
-}
-
-.grupo__tabela td {
-  font-size: 1.05rem;
-}
-
-.grupo__tabela td:nth-child(3),
-.grupo__tabela td:nth-child(4),
-.grupo__tabela td:nth-child(5) {
-  font-family: var(--mono);
-}
-
-.grupo__tabela tr.destaque td {
-  background: var(--ouro);
-  color: var(--tinta);
-  font-weight: 700;
-}
-
-.grupo__tabela tr.destaque td:first-child {
-  border-radius: 10px 0 0 10px;
-}
-
-.grupo__tabela tr.destaque td:last-child {
-  border-radius: 0 10px 10px 0;
-}
-
-.grupo__legenda {
+/* ---------- Jogos passados ---------- */
+.passados__legenda {
   opacity: 0.8;
   font-family: var(--mono);
   font-size: 0.85rem;
+}
+
+.passados {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+/* Mini-ingresso de resultado: mesmo idioma do ticket do próximo jogo —
+   fundo sólido, raio do sistema e sombra dura deslocada (como os cards do
+   glossário). A borda colorida codifica o resultado com a paleta da marca. */
+.passados__jogo {
+  background: var(--noite-2);
+  border: 2px solid rgba(244, 236, 214, 0.3);
+  border-radius: var(--raio);
+  padding: 0.7rem clamp(1rem, 3vw, 1.4rem) 0.8rem;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+  display: grid;
+  gap: 0.4rem;
+}
+
+.passados__jogo--vitoria {
+  border-color: var(--verde);
+}
+
+.passados__jogo--empate {
+  border-color: var(--ouro);
+}
+
+.passados__jogo--derrota {
+  border-color: var(--coral);
+}
+
+.passados__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.passados__data {
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  color: var(--ouro);
+}
+
+.passados__tag {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  color: var(--tinta);
+  background: rgba(244, 236, 214, 0.25);
+}
+
+.passados__jogo--vitoria .passados__tag {
+  background: var(--verde);
+}
+
+.passados__jogo--empate .passados__tag {
+  background: var(--ouro);
+}
+
+.passados__jogo--derrota .passados__tag {
+  background: var(--coral);
+  color: #fff;
+}
+
+.passados__placar-linha {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: clamp(0.6rem, 3vw, 1.5rem);
+}
+
+.passados__time {
+  font-family: var(--display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(1rem, 3.2vw, 1.35rem);
+  line-height: 1;
+  text-align: right;
+}
+
+.passados__time--adv {
+  text-align: left;
+}
+
+.passados__placar {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 5vw, 1.9rem);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.passados__placar .x {
+  color: var(--ouro);
+  font-style: normal;
+  font-size: 0.6em;
+}
+
+.passados__fase {
+  margin: 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  opacity: 0.6;
 }
 
 /* ---------- Atalho de login nas seções ---------- */
